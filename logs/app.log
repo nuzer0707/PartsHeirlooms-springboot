@@ -1,0 +1,73 @@
+2025-05-29T00:09:34.397+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] .e.d.PartsHeirloomsSpringbootApplication : Starting PartsHeirloomsSpringbootApplication using Java 21.0.6 with PID 10780 (X:\java-training\workspace\PartsHeirlooms-springboot\target\classes started by Ping in X:\java-training\workspace\PartsHeirlooms-springboot)
+2025-05-29T00:09:34.398+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] .e.d.PartsHeirloomsSpringbootApplication : No active profile set, falling back to 1 default profile: "default"
+2025-05-29T00:09:34.857+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-29T00:09:34.880+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 15 ms. Found 0 JPA repository interfaces.
+2025-05-29T00:09:35.240+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-05-29T00:09:35.252+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-05-29T00:09:35.253+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-05-29T00:09:35.301+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-05-29T00:09:35.303+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 867 ms
+2025-05-29T00:09:35.418+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-29T00:09:35.458+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-29T00:09:35.485+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-29T00:09:35.701+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-29T00:09:35.722+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-05-29T00:09:35.848+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2eb6d34a
+2025-05-29T00:09:35.851+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-05-29T00:09:35.922+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.41
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-29T00:09:36.154+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-29T00:09:36.158+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T00:09:36.226+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2025-05-29T00:09:36.493+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path '/'
+2025-05-29T00:09:36.498+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [main] .e.d.PartsHeirloomsSpringbootApplication : Started PartsHeirloomsSpringbootApplication in 2.466 seconds (process running for 2.977)
+2025-05-29T00:09:40.220+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [http-nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-05-29T00:09:40.221+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-05-29T00:09:40.221+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2025-05-29T00:09:50.597+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [RMI TCP Connection(7)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2025-05-29T00:09:50.599+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [RMI TCP Connection(7)-127.0.0.1] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-05-29T00:09:50.604+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-05-29T00:09:50.607+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [RMI TCP Connection(7)-127.0.0.1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T00:09:50.609+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [RMI TCP Connection(7)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-05-29T00:09:50.614+08:00  INFO 10780 --- [PartsHeirlooms-springboot] [RMI TCP Connection(7)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-05-29T00:40:13.060+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] .e.d.PartsHeirloomsSpringbootApplication : Starting PartsHeirloomsSpringbootApplication using Java 21.0.6 with PID 4536 (X:\java-training\workspace\PartsHeirlooms-springboot\target\classes started by Ping in X:\java-training\workspace\PartsHeirlooms-springboot)
+2025-05-29T00:40:13.062+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] .e.d.PartsHeirloomsSpringbootApplication : No active profile set, falling back to 1 default profile: "default"
+2025-05-29T00:40:13.608+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-29T00:40:13.631+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 12 ms. Found 0 JPA repository interfaces.
+2025-05-29T00:40:14.115+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-05-29T00:40:14.129+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-05-29T00:40:14.129+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-05-29T00:40:14.177+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-05-29T00:40:14.177+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1074 ms
+2025-05-29T00:40:14.304+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-29T00:40:14.343+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-05-29T00:40:14.368+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-05-29T00:40:14.580+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-29T00:40:14.605+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-05-29T00:40:14.735+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@48fc0211
+2025-05-29T00:40:14.736+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-05-29T00:40:14.800+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.41
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-29T00:40:15.411+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-29T00:40:15.482+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T00:40:15.546+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2025-05-29T00:40:15.820+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path '/'
+2025-05-29T00:40:15.826+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [main] .e.d.PartsHeirloomsSpringbootApplication : Started PartsHeirloomsSpringbootApplication in 3.156 seconds (process running for 3.774)
+2025-05-29T00:41:14.535+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [RMI TCP Connection(9)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2025-05-29T00:41:14.538+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [RMI TCP Connection(9)-127.0.0.1] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-05-29T00:41:14.543+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-05-29T00:41:14.547+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [RMI TCP Connection(9)-127.0.0.1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-05-29T00:41:14.548+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [RMI TCP Connection(9)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-05-29T00:41:14.554+08:00  INFO 4536 --- [PartsHeirlooms-springboot] [RMI TCP Connection(9)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
