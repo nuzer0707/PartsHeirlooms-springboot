@@ -9,9 +9,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.example.demo.model.entity.enums.ProductStatus;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
+@Table(name = "prdoucts")
 public class Product {
 
 	@Id

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Transaction_method",
+@Table(name = "transaction_methods",
 uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 public class TransactionMethod {
 	

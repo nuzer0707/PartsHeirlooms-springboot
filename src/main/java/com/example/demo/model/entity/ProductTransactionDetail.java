@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "product_transaction_detail")
+@Table(name = "product_transaction_details")
 public class ProductTransactionDetail {
 
 	@Id

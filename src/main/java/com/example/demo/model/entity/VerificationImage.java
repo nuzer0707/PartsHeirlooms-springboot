@@ -9,12 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "product_images")
-public class ProductImage {
+@Table(name = "verification_images")
+public class VerificationImage {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,14 +23,14 @@ public class ProductImage {
 	private Integer imageId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "product_id",nullable = false)
-	private Product product;
-
+	@JoinColumn(name = "verification_id",nullable = false)
+	private SellerVerification sellerVerification;
+	
 	@Column(name = "image_url",nullable = false,length = 500)
 	private String imageUrl;
-
+	
 	@CreationTimestamp
-	@Column(name = "created_at", nullable = false, updatable = false)
-	private LocalDateTime createdAt;
-
+	@Column(name = "update_at",nullable = false,updatable = false)
+	private LocalDateTime updateAt;
+	
 }

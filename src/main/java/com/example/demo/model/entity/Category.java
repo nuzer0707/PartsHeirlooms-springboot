@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "category" ,
+@Table(name = "categorys" ,
 uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 public class Category {
 
