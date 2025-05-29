@@ -11,18 +11,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/*
- * @Table(name = "users", uniqueConstraints = {
- * 
- * @UniqueConstraint(columnNames = "username"),
- * 
- * @UniqueConstraint(columnNames = "email") })
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+		@UniqueConstraint(columnNames = "username"),
+		@UniqueConstraint(columnNames = "email")
+		})
 public class User {
 
 	@Id
