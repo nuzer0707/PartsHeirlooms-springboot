@@ -1,8 +1,5 @@
 package com.example.demo.model.entity;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
 
 import com.example.demo.model.entity.enums.UserRole;
 
@@ -26,11 +23,8 @@ public class User {
 	@Column(name ="user_id")
 	private Integer userId;
 	
-	@Column(name = "username", nullable = false,length = 50)
+	@Column(name = "username",unique = true, nullable = false,length = 50)
 	private String username;
-	
-	@Column(name = "email",nullable = false,length = 255)
-	private String email;
 	
 	@Column(name = "password_hash",nullable = false,length = 255)
 	private String passwordHash;
@@ -38,13 +32,17 @@ public class User {
 	@Column(name = "hash_salt",nullable = false,length = 255)
 	private String hashSalt;
 	
-	@Enumerated(EnumType.STRING)
-	@Column(name = "primary_role",nullable = false,columnDefinition = "Enum('BUYER','SELLER','ADMIN') DEFAULT 'BUYER'")
-	private UserRole primaryRole;
+	@Column(name = "email",nullable = false,length = 255)
+	private String email;
 	
-	@CreationTimestamp
-	@Column(name = "created_at", nullable = false,updatable = false)
-	private LocalDateTime createdAt;
+	@Column(name = "active")
+	private Boolean active;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "primary_role",nullable = false,columnDefinition = "Enum('BUYER','SELLER','ADMIN','BlACK') DEFAULT 'BUYER'")
+	private UserRole primaryRole; //BlACK 黑名單
+	
+
 	
 	
 }

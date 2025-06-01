@@ -36,14 +36,13 @@ public class Rating {
 	@Column(name = "score",nullable = false)
 	private Short score;
 	
-	/*感覺打分數就可 留言考慮 
-	 * @Lob
-	 * @Column(name = "comment", columnDefinition = "TEXT")
-	 * private String comment;
-	*/
+	@Lob
+	@Column(name = "comment", columnDefinition = "TEXT")
+	private String comment;
+	
 	
 	@CreationTimestamp
-  @Column(name = "created_at", nullable = false, updatable = false)
-  private LocalDateTime createdAt;
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private LocalDateTime createdAt;
 	
 }

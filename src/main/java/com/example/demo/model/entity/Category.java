@@ -1,9 +1,5 @@
 package com.example.demo.model.entity;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,19 +10,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "categorys" ,
-uniqueConstraints = @UniqueConstraint(columnNames = "name"))
+uniqueConstraints = @UniqueConstraint(columnNames = "category_name"))
 public class Category {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@GeneratedValue(strategy = GenerationType.IDENTITY) //room_id 會從 1 開始自動生成, 每次 +1, 過號不補
 	@Column(name = "category_id")
 	private Integer categoryId;
 	
-	@Column(name = "name" ,nullable = false,length = 100)
-	private String name;
-	
-	@CreationTimestamp
-	@Column(name = "creatded_at" ,nullable = false,updatable = false)
-	private LocalDateTime creatdedAt;
-	
+	@Column(name = "category_name" ,nullable = false,length = 50)
+	private String categoryName;
+
 }
