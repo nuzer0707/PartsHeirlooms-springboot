@@ -1,0 +1,149 @@
+type: collection.insomnia.rest/5.0
+name: Scratch Pad
+meta:
+  id: wrk_scratchpad
+  created: 1747234897720
+  modified: 1747234897720
+collection:
+  - name: 分類
+    meta:
+      id: fld_3f5af6e6a97f4c12bc664a416b858101
+      created: 1748702952733
+      modified: 1748702952733
+      sortKey: -1748702952733
+    children:
+      - url: http://localhost:8081/category
+        name: 查詢所有分類
+        meta:
+          id: req_31a572a283b444828260920fecec36ef
+          created: 1747235063815
+          modified: 1748702969059
+          isPrivate: false
+          sortKey: -1748702960961
+        method: GET
+        body:
+          mimeType: application/json
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8081/category
+        name: 新增分類
+        meta:
+          id: req_1bf38a7104714e429d91195684750a51
+          created: 1748700459925
+          modified: 1748702961104
+          isPrivate: false
+          sortKey: -1748702961061
+        method: POST
+        body:
+          mimeType: application/json
+          text: |
+            		{
+            			"categoryId": 9,
+            			"categoryName": "其他"
+            		}
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8081/category/1
+        name: 查詢單筆分類
+        meta:
+          id: req_eb1bf06312534c928f4b6013a1f5a24a
+          created: 1748702727633
+          modified: 1748756566508
+          isPrivate: false
+          sortKey: -1748702961011
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8081/category/9
+        name: 修改分類
+        meta:
+          id: req_18a62f56e1de418f81c50f01d3162f5c
+          created: 1748756272922
+          modified: 1748756414709
+          isPrivate: false
+          sortKey: -1748702961161
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |
+            	{
+            			"categoryId": 9,
+            			"categoryName": "其他的"
+            		}
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8081/category/9
+        name: 刪除分類
+        meta:
+          id: req_8cb5bf907da44276b4dcba045c14f91d
+          created: 1748756428979
+          modified: 1748756695480
+          isPrivate: false
+          sortKey: -1748702961261
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1747234914785
+    modified: 1747234914785
+environments:
+  name: Base Environment
+  meta:
+    id: env_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1747234914673
+    modified: 1747234914673
+    isPrivate: false
