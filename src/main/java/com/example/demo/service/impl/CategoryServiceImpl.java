@@ -29,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
 	
 	
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true)  // 讀操作，設置 readOnly = true 可以優化
 	public List<CategoryDto> findAllCategorys() {
 		return categoryRepository.findAll()//  category 集合
 								 .stream()//  category 集合
@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true)  // 讀操作，設置 readOnly = true 可以優化
 	public CategoryDto getCategoryId(Integer categoryId) {
 		Category category = categoryRepository
 							.findById(categoryId)
@@ -47,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional// 寫操作建議加上事務管理
 	public void addCategory(CategoryDto categoryDto) {
 		Optional<Category> optCategory = categoryRepository
 									 .findByCategoryName(categoryDto.getCategoryName());
@@ -65,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional// 寫操作建議加上事務管理
 	public void addCategory(Integer categoryId, String categoryName) {
 		
 		CategoryDto ctegoryDto = new CategoryDto(categoryId,categoryName);
@@ -73,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional// 寫操作建議加上事務管理
 	public void updateCategory(Integer categoryId, CategoryDto categoryDto) {
 		
 		Optional<Category> optCategory = categoryRepository.findById(categoryId);
@@ -88,14 +88,14 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional// 寫操作建議加上事務管理
 	public void updateCategory(Integer categoryId, String categoryName) {
 		CategoryDto ctegoryDto = new CategoryDto(categoryId,categoryName);
 		updateCategory(categoryId, ctegoryDto);
 	}
 	
 	@Override
-	@Transactional
+	@Transactional// 寫操作建議加上事務管理
 	public void deleteCategory(Integer categoryId) {
 		// 判斷該分類是否已經存在 ?
 		Optional<Category> optCategory = categoryRepository.findById(categoryId);
