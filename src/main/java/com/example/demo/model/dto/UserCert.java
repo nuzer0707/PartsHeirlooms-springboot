@@ -14,8 +14,9 @@ import lombok.ToString;
 @ToString
 public class UserCert {
 
+	private Integer userId;
 	private String username;
-	private String email;
+	
 	private UserRole primaryRole; 
 	
 }

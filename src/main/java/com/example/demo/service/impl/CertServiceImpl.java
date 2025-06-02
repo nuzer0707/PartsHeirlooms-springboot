@@ -1,16 +1,19 @@
 package com.example.demo.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.CertException;
 import com.example.demo.exception.PasswordInvalidException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.dto.UserCert;
 import com.example.demo.model.entity.User;
+import com.example.demo.model.entity.enums.UserRole;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.CertService;
 import com.example.demo.util.Hash;
 
+@Service
 public class CertServiceImpl implements CertService {
 	
 	@Autowired
@@ -29,8 +32,9 @@ public class CertServiceImpl implements CertService {
 		if(!passwordHash.equals(user.getPasswordHash())) {
 			throw new PasswordInvalidException("密碼錯誤");
 		}
-		
-		return null;
+		// 3. 簽發憑證
+		UserCert userCert = new UserCert(user.getUserId(),user.getUsername(), user.getPrimaryRole());
+		return userCert;
 	}
 
 }

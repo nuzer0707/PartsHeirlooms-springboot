@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	@Transactional// 寫操作建議加上事務管理
-	public void adduser(String username, String password, String email, Boolean active, UserRole primaryRole) {
+	public void addUser(String username, String password, String email, Boolean active, UserRole primaryRole) {
 		String salt = Hash.getSalt();
 		String passwordHash = Hash.getHash(password,salt);
 		User user = new User(null,username,passwordHash,salt,email,active,primaryRole);

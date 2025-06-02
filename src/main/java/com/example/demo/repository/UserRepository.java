@@ -13,10 +13,10 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Integer>{
 
-	@Query(value = "select user_id, username, password_hash, hash_salt, email, active, primary_role,created_at from users where username=:username", nativeQuery = true)
+	@Query(value = "select user_id, username, password_hash, hash_salt, email, active, primary_role from users where username=:username", nativeQuery = true)
 	User getUser(String username);
 	
-	// Optional<User> findByUsername(String username); 根據用戶名查找，返回
+	Optional<User> findByUsername(String username);// 根據用戶名查找，返回
 	
 	// 根據 email 查找，返回 Optional<User>
 	Optional<User> findByEmail(String email);

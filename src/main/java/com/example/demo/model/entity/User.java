@@ -1,6 +1,10 @@
 package com.example.demo.model.entity;
 
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.example.demo.model.entity.enums.UserRole;
 
 import jakarta.persistence.*;
@@ -43,6 +47,5 @@ public class User {
 	private UserRole primaryRole; //BlACK 黑名單
 	
 
-	
 	
 }
