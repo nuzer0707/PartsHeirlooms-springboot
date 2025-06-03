@@ -57,13 +57,18 @@ public class UserServiceImpl implements UserService{
 	public void addUser(String username, String password, String email, Boolean active, UserRole primaryRole) {
 		String salt = Hash.getSalt();
 		String passwordHash = Hash.getHash(password,salt);
-		User user = new User(null,username,passwordHash,salt,email,active,primaryRole);
+		
+		User user = User.builder()
+					.username(username)
+					.passwordHash(passwordHash)
+					.hashSalt(salt)
+					.email(email)
+					.active(active)
+					.primaryRole(primaryRole)
+					.build();		
 		userRepository.save(user);
 	}
 
-	
-	
-	
 	@Override
 	@Transactional// 寫操作建議加上事務管理
 	public void changePassword(Integer userId, PasswordChangeDto passwordChangeDto) throws CertException {

@@ -10,12 +10,14 @@ import com.example.demo.model.entity.enums.TransactionStatus;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "transactions")
 public class Transaction {

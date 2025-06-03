@@ -11,27 +11,29 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@AllArgsConstructor
 @Entity
-@Table(name = "transaction_methods",
-uniqueConstraints = @UniqueConstraint(columnNames = "name"))
-public class TransactionMethod {
+@Builder
+@Table(name = "favorite",
+		uniqueConstraints = @UniqueConstraint(columnNames = {"user_id","product_id"}))
+public class Favorite {
+
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "method_id")
-	private Integer methodId;
+	@Column(name = "favotite_id")
+	private Integer favotiteId;
 	
-	@Column(name = "name",nullable = false,length = 50)
-	private String name;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 	
-	@Column(name = "description",length = 255)
-	private String description;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "product_id", nullable = false)
+	private Product product;
 	
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
-	
 }

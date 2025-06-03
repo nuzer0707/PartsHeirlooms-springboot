@@ -9,12 +9,14 @@ import com.example.demo.model.entity.enums.ReportTargetType;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "issue_reports")
 public class IssueReport {

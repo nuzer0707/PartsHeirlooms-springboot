@@ -1,5 +1,8 @@
 package com.example.demo.model.dto.users;
 
+import java.util.List;
+
+import com.example.demo.model.entity.Favorite;
 import com.example.demo.model.entity.enums.UserRole;
 
 import lombok.Data;
@@ -11,4 +14,5 @@ public class UserDto {
 	private String email;
 	private Boolean active;
 	private UserRole primaryRole;
+
 }

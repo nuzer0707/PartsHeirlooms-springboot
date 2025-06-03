@@ -10,12 +10,15 @@ import com.example.demo.model.entity.enums.ProductStatus;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "prdoucts")
 public class Product {
@@ -56,5 +59,9 @@ public class Product {
 	@OneToMany(mappedBy = "product",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 	private List<ProductTransactionDetail> transactionDetails;
 	
+	
+	@OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
+	@ToString.Exclude
+	private List<Favorite> favoriteByUser;
 	
 }
