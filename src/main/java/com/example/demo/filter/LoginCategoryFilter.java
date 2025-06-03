@@ -2,6 +2,8 @@ package com.example.demo.filter;
 
 import java.io.IOException;
 
+import com.example.demo.model.dto.users.UserCert;
+import com.example.demo.model.entity.enums.UserRole;
 import com.example.demo.response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -14,8 +16,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 
+
 @WebFilter(urlPatterns = {"/category/*","/categorys/*"})
-public class LoginRestFilter extends HttpFilter  {
+public class LoginCategoryFilter extends HttpFilter  {
 	
 	@Override
 	protected void doFilter(HttpServletRequest request,HttpServletResponse response,FilterChain chain) 
@@ -39,7 +42,21 @@ public class LoginRestFilter extends HttpFilter  {
 		HttpSession session = request.getSession(false);// 傳 false，如果 session 不存在則不創建新的
 // 非 GET 時驗證登入狀態
 		if(session != null && session.getAttribute("userCert") != null) {
-			chain.doFilter(request, response);// 已登入，放行
+			UserCert userCert = (UserCert) session.getAttribute("userCert");
+			// 檢查是否為 ADMIN 角色
+			if(userCert.getPrimaryRole()==UserRole.ADMIN) {
+				chain.doFilter(request, response);// 已登入，放行
+			}else {
+			// 已登入但不是 ADMIN，回傳 403 Forbidden (禁止訪問)
+				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				response.setContentType("application/json;charset=UTF-8");
+				ApiResponse<?> apiResponse = ApiResponse.error(HttpServletResponse.SC_FORBIDDEN,"權限不足，需要管理員權限");
+			// 利用 ObjectMapper 將指定物件轉 json
+				ObjectMapper mapper = new ObjectMapper();
+				String json = mapper.writeValueAsString(apiResponse);
+				response.getWriter().write(json);
+			
+			}
 		}else {
 // 未登入，回傳 401
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

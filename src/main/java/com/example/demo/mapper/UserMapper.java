@@ -3,7 +3,8 @@ package com.example.demo.mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.example.demo.model.dto.UserDto;
+
+import com.example.demo.model.dto.users.UserDto;
 import com.example.demo.model.entity.User;
 
 @Component

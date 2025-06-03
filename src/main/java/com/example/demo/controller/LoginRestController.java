@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.exception.CertException;
-import com.example.demo.model.dto.UserCert;
+import com.example.demo.model.dto.users.UserCert;
 import com.example.demo.response.ApiResponse;
 import com.example.demo.service.CertService;
 

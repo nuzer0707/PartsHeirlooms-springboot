@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.exception.CertException;
 import com.example.demo.exception.PasswordInvalidException;
 import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.model.dto.UserCert;
+import com.example.demo.model.dto.users.UserCert;
 import com.example.demo.model.entity.User;
 import com.example.demo.model.entity.enums.UserRole;
 import com.example.demo.repository.UserRepository;

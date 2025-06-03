@@ -18,7 +18,7 @@ public class UserJPAAddTest {
 		userService.addUser("john", "1234", "john@gmail.com", true, UserRole.ADMIN);
 		userService.addUser("mary", "1234", "mary@gmail.com", true, UserRole.SELLER);
 		userService.addUser("tommy", "1234", "tommy@gmail.com", true, UserRole.BUYER);
-		userService.addUser("andy", "1234", "andy@gmail.com", true, UserRole.BlACK);
+		userService.addUser("andy", "1234", "andy@gmail.com", true, UserRole.BLACK);
 		System.out.println("User add ok!");
 	}
 	

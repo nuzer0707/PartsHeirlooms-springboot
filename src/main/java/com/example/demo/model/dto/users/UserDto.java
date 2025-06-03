@@ -1,4 +1,4 @@
-package com.example.demo.model.dto;
+package com.example.demo.model.dto.users;
 
 import com.example.demo.model.entity.enums.UserRole;
 
@@ -10,5 +10,5 @@ public class UserDto {
 	private String username;
 	private String email;
 	private Boolean active;
-	private UserRole primaryRole; 
+	private UserRole primaryRole;
 }

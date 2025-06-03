@@ -43,8 +43,8 @@ public class User {
 	private Boolean active;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "primary_role",nullable = false,columnDefinition = "Enum('BUYER','SELLER','ADMIN','BlACK') DEFAULT 'BUYER'")
-	private UserRole primaryRole; //BlACK 黑名單
+	@Column(name = "primary_role",nullable = false,columnDefinition = "Enum('BUYER','SELLER','ADMIN','BLACK') DEFAULT 'BUYER'")
+	private UserRole primaryRole; //BLACK 黑名單
 	
 
 	

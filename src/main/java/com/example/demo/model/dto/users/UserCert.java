@@ -1,4 +1,4 @@
-package com.example.demo.model.dto;
+package com.example.demo.model.dto.users;
 
 import com.example.demo.model.entity.enums.UserRole;
 

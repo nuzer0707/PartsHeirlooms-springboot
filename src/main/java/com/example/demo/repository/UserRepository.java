@@ -31,4 +31,6 @@ public interface UserRepository extends JpaRepository<User, Integer>{
     // 查找特定角色且活躍的用戶
     List<User> findByPrimaryRoleAndActive(UserRole primaryRole, Boolean active);
 	
+    List<User> findByPrimaryRoleIn(List<UserRole> roles);
+    
 }
