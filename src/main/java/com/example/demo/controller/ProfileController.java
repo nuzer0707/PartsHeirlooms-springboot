@@ -14,6 +14,7 @@ import com.example.demo.exception.PasswordInvalidException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.dto.users.PasswordChangeDto;
 import com.example.demo.model.dto.users.UserCert;
+
 import com.example.demo.response.ApiResponse;
 import com.example.demo.service.UserService;
 
@@ -24,9 +25,12 @@ import jakarta.validation.Valid;
 @RequestMapping(value = {"/profile"})
 @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8002"},allowCredentials = "true")
 public class ProfileController {
-
+	//使用者自行操作
 	@Autowired
 	private UserService userService;
+	
+	
+	
 	
 	@PutMapping("/password")
 	private ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody PasswordChangeDto passwordChangeDto,HttpSession session){

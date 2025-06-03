@@ -16,7 +16,6 @@ public class UserCert {
 
 	private Integer userId;
 	private String username;
-	
 	private UserRole primaryRole; 
 	
 }
