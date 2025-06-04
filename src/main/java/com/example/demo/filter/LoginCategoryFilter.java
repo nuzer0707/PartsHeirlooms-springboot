@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpSession;
 
 
 @WebFilter(urlPatterns = {"/category/*","/categorys/*"})
-public class LoginCategoryFilter extends HttpFilter  {
+public class LoginCategoryFilter extends BaseAuthFilter {
 	
 	@Override
 	protected void doFilter(HttpServletRequest request,HttpServletResponse response,FilterChain chain) 
@@ -48,28 +48,33 @@ public class LoginCategoryFilter extends HttpFilter  {
 				chain.doFilter(request, response);// 已登入，放行
 			}else {
 			// 已登入但不是 ADMIN，回傳 403 Forbidden (禁止訪問)
-				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-				response.setContentType("application/json;charset=UTF-8");
-				ApiResponse<?> apiResponse = ApiResponse.error(HttpServletResponse.SC_FORBIDDEN,"權限不足，需要管理員權限");
-			// 利用 ObjectMapper 將指定物件轉 json
-				ObjectMapper mapper = new ObjectMapper();
-				String json = mapper.writeValueAsString(apiResponse);
-				response.getWriter().write(json);
+				sendErrorResponse(response,HttpServletResponse.SC_FORBIDDEN,"權限不足，需要管理員權限");
+//sendErrorResponse是BaseAuthFilter繼承
+//				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+//				response.setContentType("application/json;charset=UTF-8");
+//				ApiResponse<?> apiResponse = ApiResponse.error(HttpServletResponse.SC_FORBIDDEN,"權限不足，需要管理員權限");
+//			// 利用 ObjectMapper 將指定物件轉 json
+//				ObjectMapper mapper = new ObjectMapper();
+//				String json = mapper.writeValueAsString(apiResponse);
+//				response.getWriter().write(json);
 			
 			}
 		}else {
+			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "請先登入");
 // 未登入，回傳 401
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.setContentType("application/json;charset=UTF-8");
-			ApiResponse<?> apiResponse = ApiResponse.error(401, "請先登入");
-// 利用 ObjectMapper 將指定物件轉 json
-			ObjectMapper mapper = new ObjectMapper();
-			String json = mapper.writeValueAsString(apiResponse);
-			response.getWriter().write(json);
+//			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//			response.setContentType("application/json;charset=UTF-8");
+//			ApiResponse<?> apiResponse = ApiResponse.error(401, "請先登入");
+//// 利用 ObjectMapper 將指定物件轉 json
+//			ObjectMapper mapper = new ObjectMapper();
+//			String json = mapper.writeValueAsString(apiResponse);
+//			response.getWriter().write(json);
 
 		}
 
 	}
+
+
 	
 	
 }

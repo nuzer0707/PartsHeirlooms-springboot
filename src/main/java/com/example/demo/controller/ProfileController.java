@@ -31,7 +31,7 @@ public class ProfileController {
 	
 	
 	
-	
+	//使用者修改密碼
 	@PutMapping("/password")
 	private ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody PasswordChangeDto passwordChangeDto,HttpSession session){
 		
