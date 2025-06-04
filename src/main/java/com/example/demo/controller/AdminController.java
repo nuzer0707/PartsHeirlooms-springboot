@@ -83,11 +83,11 @@ public class AdminController {
 	}	
 	
 	//ADMIN 刪除使用者
-	@DeleteMapping("{/users/userId}")
-	public ResponseEntity<ApiResponse<Void>> deleteUserByAdmin(@PathVariable Integer userId){
+	@DeleteMapping("/users/{userId}")
+	public ResponseEntity<ApiResponse<Integer>> deleteUserByAdmin(@PathVariable Integer userId){
 		try {
 			userService.deleteUserByAdmin(userId);
-			return ResponseEntity.ok(ApiResponse.success("使用者"+userId+"成功刪除", null));
+			return ResponseEntity.ok(ApiResponse.success("使用者"+userId+"成功刪除", userId));
 			
 		} catch (UserNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(HttpStatus.NOT_FOUND.value(),"刪除失敗"+ e.getMessage()));

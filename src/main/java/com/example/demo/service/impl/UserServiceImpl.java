@@ -2,7 +2,7 @@ package com.example.demo.service.impl;
 
 
 import java.util.List;
-
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,8 @@ import com.example.demo.exception.CertException;
 import com.example.demo.exception.PasswordInvalidException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.mapper.UserMapper;
-import com.example.demo.model.dto.users.PasswordChangeDto;
+import com.example.demo.model.dto.users.UserPasswordChangeDto;
+import com.example.demo.model.dto.users.UserProfileDto;
 import com.example.demo.model.dto.users.UserAddDto;
 import com.example.demo.model.dto.users.UserDto;
 import com.example.demo.model.dto.users.UserUpdateDto;
@@ -68,10 +69,21 @@ public class UserServiceImpl implements UserService{
 					.build();		
 		userRepository.save(user);
 	}
-
+	
+	
+	//*************新增給一般使用者 (BUYER, SELLER)*************
+	
 	@Override
-	@Transactional// 寫操作建議加上事務管理
-	public void changePassword(Integer userId, PasswordChangeDto passwordChangeDto) throws CertException {
+	@Transactional(readOnly = true)
+	public UserProfileDto getUserProfile(Integer userId) throws CertException {
+		User user = userRepository.findById(userId)
+															.orElseThrow(()->new UserNotFoundException("找不到使用者 ID：" + userId));
+		return new UserProfileDto(user.getUserId(),user.getUsername(),user.getEmail(),user.getPrimaryRole());
+	}
+	
+	@Override
+	@Transactional// 寫操作建議加上事務管理 
+	public void changePassword(Integer userId, UserPasswordChangeDto passwordChangeDto) throws CertException {
 		User user = userRepository
 							.findById(userId)
 							.orElseThrow(()-> new UserNotFoundException("找不到使用者 ID：" + userId));
@@ -94,7 +106,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	
-	
+	//*************新增給 ADMIN*************
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -126,7 +138,7 @@ public class UserServiceImpl implements UserService{
 		user.setPasswordHash(passwordHash);
 		user.setHashSalt(salt);
 		user.setEmail(addDto.getEmail());
-		user.setActive(addDto.getActive() !=null ? user.getActive():true);
+		user.setActive(addDto.getActive() == null ? user.getActive():true);
 		user.setPrimaryRole(addDto.getPrimaryRole());
 		
 		User savedUser = userRepository.save(user);
@@ -135,6 +147,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
+	@Transactional
 	public UserDto updateUserByAdmin(Integer userId, UserUpdateDto updateDto) throws CertException {
 		
 		User user = userRepository.findById(userId)
@@ -160,19 +173,27 @@ public class UserServiceImpl implements UserService{
 			user.setActive(updateDto.getActive());
 		}
 		
-
+		//更新身分
+		if(updateDto.getPrimaryRole()!=null) {
+			user.setPrimaryRole(updateDto.getPrimaryRole());
+		}
+		
 		User savedUser = userRepository.save(user);
 		return userMapper.toDto(savedUser);
 	}
 
 	@Override
+	@Transactional
 	public void deleteUserByAdmin(Integer userId) throws CertException {
-		if(!userRepository.existsById(userId)) {
-			throw new UserNotFoundException("刪除失敗：找不到使用者 ID：" + userId);
+		
+		if (!userRepository.existsById(userId)) {
+       throw new UserNotFoundException("刪除失敗：找不到使用者 ID：" + userId);
 		}
 		
-		userRepository.existsById(userId);
+		userRepository.deleteById(userId);
 	}
+
+
 
 
 

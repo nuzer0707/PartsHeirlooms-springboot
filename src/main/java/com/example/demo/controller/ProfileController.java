@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.exception.CertException;
 import com.example.demo.exception.PasswordInvalidException;
 import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.model.dto.users.PasswordChangeDto;
+import com.example.demo.model.dto.users.UserPasswordChangeDto;
+import com.example.demo.model.dto.users.UserProfileDto;
 import com.example.demo.model.dto.users.UserCert;
 
 import com.example.demo.response.ApiResponse;
@@ -29,11 +31,33 @@ public class ProfileController {
 	@Autowired
 	private UserService userService;
 	
-	
+	//使用者查詢自己的個人資料
+	@GetMapping("/user")
+	private ResponseEntity<ApiResponse<UserProfileDto>>getMyProfile (HttpSession session){
+		
+		UserCert userCert = (UserCert) session.getAttribute("userCert");
+		if (userCert == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+													.body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(),"請先登入以查看個人資料"));
+		}
+		try {
+				UserProfileDto userProfile = userService.getUserProfile(userCert.getUserId());
+				return ResponseEntity.ok(ApiResponse.success("個人資料查詢成功", userProfile));
+		} catch (UserNotFoundException  e) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+															.body(ApiResponse.error
+															(HttpStatus.NOT_FOUND.value(),e.getMessage()));
+		}catch (CertException e) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          								.body(ApiResponse.error
+          								(HttpStatus.INTERNAL_SERVER_ERROR.value(), "查詢個人資料失敗，請稍後再試"));
+		}
+		
+	}
 	
 	//使用者修改密碼
 	@PutMapping("/password")
-	private ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody PasswordChangeDto passwordChangeDto,HttpSession session){
+	private ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody UserPasswordChangeDto passwordChangeDto,HttpSession session){
 		
 		UserCert userCert = (UserCert) session.getAttribute("userCert");
 		
