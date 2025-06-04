@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "app.base-url",
+    "type": "java.lang.String",
+    "description": "A description for 'app.base-url'"
+  },
+  {
+    "name": "custom.mail.from",
+    "type": "java.lang.String",
+    "description": "A description for 'custom.mail.from'"
+  },
+  {
+    "name": "custom.mail.google.app.password",
+    "type": "java.lang.String",
+    "description": "A description for 'custom.mail.google.app.password'"
+  },
+  {
+    "name": "custom.mail.smtp.host",
+    "type": "java.lang.String",
+    "description": "A description for 'custom.mail.smtp.host'"
+  },
+  {
+    "name": "custom.mail.smtp.port",
+    "type": "java.lang.String",
+    "description": "A description for 'custom.mail.smtp.port'"
+  }
+]}

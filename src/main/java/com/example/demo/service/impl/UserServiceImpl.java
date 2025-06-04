@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService{
 		user.setPasswordHash(passwordHash);
 		user.setHashSalt(salt);
 		user.setEmail(addDto.getEmail());
-		user.setActive(addDto.getActive() == null ? user.getActive():true);
+		user.setActive(addDto.getActive() != null ? true:false);
 		user.setPrimaryRole(addDto.getPrimaryRole());
 		
 		User savedUser = userRepository.save(user);
