@@ -33,7 +33,7 @@ public class UserRegisterServiceImpl implements UserRegisterService {
 	@Value("${app.base-url}")
 	private  String appBaseUrl;
 	
-	 private static final int RESEND_COOLDOWN_SECONDS = 10; // 定義冷卻時間為常數
+	 private static final int RESEND_COOLDOWN_SECONDS = 60; // 定義冷卻時間為常數
 	
 	
 	@Override
@@ -44,7 +44,7 @@ public class UserRegisterServiceImpl implements UserRegisterService {
 			throw new UserAlreadyExistsException("使用者名稱"+userRegisterDto.getUsername()+"已被註冊");
 		}
 		
-		if(userRepository.existsByUsername(userRegisterDto.getEmail())) {		
+		if(userRepository.existsByEmail(userRegisterDto.getEmail())) {		
 			throw new UserAlreadyExistsException("電子郵件地址"+userRegisterDto.getEmail()+"已被註冊");
 		}
 		

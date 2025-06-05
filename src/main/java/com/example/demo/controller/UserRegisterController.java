@@ -19,6 +19,7 @@ import com.example.demo.response.ApiResponse;
 import com.example.demo.service.UserRegisterService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 
@@ -70,7 +71,7 @@ public class UserRegisterController {
 	
 	//重新發送驗證郵件的端點
 	@PostMapping("/resend-verification-email")
-	public ResponseEntity<ApiResponse<Void>> resendVerifyEmail(@RequestParam @NotBlank(message = "Email 格式不正確")String email){
+	public ResponseEntity<ApiResponse<Void>> resendVerifyEmail(@RequestParam @NotBlank(message = "Email 地址不能為空") @Email(message = "Email 格式不正確")String email){
 		try {
 			userRegisterService.resendEmail(email);
 			return ResponseEntity.ok(ApiResponse.success("新的驗證郵件已成功發送至 "+email+" 請檢查您的收件匣", null));
