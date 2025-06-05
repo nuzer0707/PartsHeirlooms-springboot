@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Integer>{
 
-	@Query(value = "select user_id, username, password_hash, hash_salt, email, active, primary_role,email_token from users where username=:username", nativeQuery = true)
+	@Query(value = "select user_id, username, password_hash, hash_salt, email, active, primary_role,email_token,last_email_sent_at from users where username=:username", nativeQuery = true)
 	User getUser(String username);
 	
 		Optional<User> findByUsername(String username);// 根據用戶名查找，返回
@@ -35,4 +35,5 @@ public interface UserRepository extends JpaRepository<User, Integer>{
     
     // 根據 emailToken 查找用戶 (用於郵件驗證)
     Optional<User> findByEmailToken(String emailToken);
+    
 }

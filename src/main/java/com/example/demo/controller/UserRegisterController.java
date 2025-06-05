@@ -13,12 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.exception.TokenInvalidException;
 import com.example.demo.exception.UserAlreadyExistsException;
-
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.dto.users.UserRegisterDto;
 import com.example.demo.response.ApiResponse;
 import com.example.demo.service.UserRegisterService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 
 @RestController
@@ -66,6 +67,32 @@ public class UserRegisterController {
 		}
 		
 	}
+	
+	//重新發送驗證郵件的端點
+	@PostMapping("/resend-verification-email")
+	public ResponseEntity<ApiResponse<Void>> resendVerifyEmail(@RequestParam @NotBlank(message = "Email 格式不正確")String email){
+		try {
+			userRegisterService.resendEmail(email);
+			return ResponseEntity.ok(ApiResponse.success("新的驗證郵件已成功發送至 "+email+" 請檢查您的收件匣", null));
+		} catch (UserNotFoundException  e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+													 .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+		}	catch (IllegalStateException  e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					 .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+		} catch (RuntimeException  e) {
+			System.err.println("重新發送驗證郵件時發生錯誤: " + e.getMessage());
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					 .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "重新發送驗證郵件失敗，請稍後再試"));
+		}
+		
+		
+		
+		
+	}
+	
+	
 	
 	
 }

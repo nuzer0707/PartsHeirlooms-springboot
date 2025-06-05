@@ -1,5 +1,6 @@
 package com.example.demo.model.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,5 +55,9 @@ public class User {
 	
 	@Column(name = "email_token",length = 100,unique = true)// token 應該是唯一的，或至少在未激活時唯一
 	private String emailToken;
+	
+  @Column(name = "last_email_sent_at")
+  private LocalDateTime lastEmailSentAt;
+	
 	
 }

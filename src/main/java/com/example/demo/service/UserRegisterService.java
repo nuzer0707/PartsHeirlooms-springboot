@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.exception.TokenInvalidException;
 import com.example.demo.exception.UserAlreadyExistsException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.dto.users.UserRegisterDto;
 
 public interface UserRegisterService {
@@ -26,5 +27,5 @@ public interface UserRegisterService {
   // 可選：如果需要重新發送驗證郵件的功能
   // void resendVerificationEmail(String email) throws UserNotFoundException;
 
-  
+  void resendEmail(String email) throws UserNotFoundException, IllegalStateException;
 }
