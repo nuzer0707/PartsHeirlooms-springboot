@@ -52,7 +52,7 @@ public class User {
 	@Builder.Default
 	private List<Favorite> favoriteByProduct = new ArrayList<>();
 	
-	@Column(name = "email_Token",length = 100,unique = true)// token 應該是唯一的，或至少在未激活時唯一
+	@Column(name = "email_token",length = 100,unique = true)// token 應該是唯一的，或至少在未激活時唯一
 	private String emailToken;
 	
 }
