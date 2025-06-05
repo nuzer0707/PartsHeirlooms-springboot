@@ -22,7 +22,7 @@ import jakarta.validation.Valid;
 
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping
 @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8002"}, allowCredentials = "true")
 public class UserRegisterController {
 	
