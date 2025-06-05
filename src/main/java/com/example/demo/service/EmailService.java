@@ -42,8 +42,10 @@ public class EmailService {
 		Properties properties = new Properties();
 		properties.put("mail.smtp.auth","true");
 		properties.put("mail.smtp.starttls.enable","true");
-		properties.put("mail.smtp.host","smtpHost");
-		properties.put("mail.smtp.port","smtpPort");
+		
+		// 使用 @Value 注入的成員變數
+		properties.put("mail.smtp.host",this.smptpHost);
+		properties.put("mail.smtp.port",this.smtpPort);
 		
 		Session session = Session.getInstance(properties,new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {

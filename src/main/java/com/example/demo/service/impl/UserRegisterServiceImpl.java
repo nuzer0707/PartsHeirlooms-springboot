@@ -27,7 +27,7 @@ public class UserRegisterServiceImpl implements UserRegisterService {
 	@Autowired
 	private  EmailService emailService;
 	
-	@Autowired
+	@Value("${app.base-url}")
 	private  String appBaseUrl;
 	
 	@Override
@@ -38,7 +38,7 @@ public class UserRegisterServiceImpl implements UserRegisterService {
 			throw new UserAlreadyExistsException("使用者名稱"+userRegisterDto.getUsername()+"已被註冊");
 		}
 		
-		if(userRepository.existsByUsername(userRegisterDto.getUsername())) {		
+		if(userRepository.existsByUsername(userRegisterDto.getEmail())) {		
 			throw new UserAlreadyExistsException("電子郵件地址"+userRegisterDto.getEmail()+"已被註冊");
 		}
 		
@@ -58,7 +58,7 @@ public class UserRegisterServiceImpl implements UserRegisterService {
 		
 		// 構建驗證連結和郵件內容
 		
-		String verificationLink = appBaseUrl + "/verify-email?token=\" + token";
+		String verificationLink = appBaseUrl + "/verify-email?token=" +  token ;
 		String emailSubject ="帳戶驗證 - 零件傳承坊";
 		String htmlContent = String.format(
 						 "<html><body>" +

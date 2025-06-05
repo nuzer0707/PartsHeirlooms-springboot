@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.exception.TokenInvalidException;
 import com.example.demo.exception.UserAlreadyExistsException;
-import com.example.demo.exception.UserNotFoundException;
+
 import com.example.demo.model.dto.users.UserRegisterDto;
 import com.example.demo.response.ApiResponse;
 import com.example.demo.service.UserRegisterService;
