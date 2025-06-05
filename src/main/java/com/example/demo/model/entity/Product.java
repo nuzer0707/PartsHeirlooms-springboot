@@ -20,7 +20,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "prdoucts")
+@Table(name = "prodoucts")
 public class Product {
 
 	@Id
@@ -63,5 +63,7 @@ public class Product {
 	@OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
 	@ToString.Exclude
 	private List<Favorite> favoriteByUser;
+	
+	
 	
 }

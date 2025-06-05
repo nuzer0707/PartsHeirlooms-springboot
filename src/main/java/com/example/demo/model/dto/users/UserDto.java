@@ -1,5 +1,6 @@
 package com.example.demo.model.dto.users;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.demo.model.entity.Favorite;
@@ -14,5 +15,5 @@ public class UserDto {
 	private String email;
 	private Boolean active;
 	private UserRole primaryRole;
-
+	private LocalDateTime createdAt;
 }

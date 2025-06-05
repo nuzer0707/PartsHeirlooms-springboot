@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.example.demo.model.entity.enums.UserRole;
 
 import jakarta.persistence.*;
@@ -56,8 +58,13 @@ public class User {
 	@Column(name = "email_token",length = 100,unique = true)// token 應該是唯一的，或至少在未激活時唯一
 	private String emailToken;
 	
-  @Column(name = "last_email_sent_at")
-  private LocalDateTime lastEmailSentAt;
+	@Column(name = "last_email_sent_at")
+	private LocalDateTime lastEmailSentAt;
 	
+	@CreationTimestamp
+	@Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+   
 	
 }

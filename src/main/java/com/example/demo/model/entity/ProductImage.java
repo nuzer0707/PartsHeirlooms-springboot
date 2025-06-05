@@ -27,11 +27,15 @@ public class ProductImage {
 	@JoinColumn(name = "product_id",nullable = false)
 	private Product product;
 
-	@Column(name = "image_url",nullable = false,length = 500)
-	private String imageUrl;
+    @Lob
+    @Column(name = "image_base64", nullable = false)
+    private String imageBase64;
+
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
+
+	
 }
