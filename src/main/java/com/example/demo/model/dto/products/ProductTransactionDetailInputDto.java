@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductTransactionDetailInputDto {
+	//產品交易明細輸入 DTO
 
 	@NotBlank(message = "交易方式 ID 不能為空")
 	private Integer methodId;  // 參考 TransactionMethod 的 ID

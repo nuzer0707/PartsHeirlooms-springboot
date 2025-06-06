@@ -39,9 +39,10 @@ public class ProductDto {
 	
 	private String fullDescription; // 完整描述
 	
-	private List<ProductImage> productImages;
+	private List<String> imageBases64;
 	
-	private List<ProductTransactionDetail> transactionDetails;
+	private List<ProductTransactionDetailDto> transactionDetails;
+
 	
 	
 	

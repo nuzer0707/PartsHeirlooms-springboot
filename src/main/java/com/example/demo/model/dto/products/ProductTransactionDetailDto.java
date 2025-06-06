@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductTransactionDetailDto {
-
+	// 產品交易明細 DTO
 	private Integer detailId; // 這個 ProductTransactionDetail 實例的 ID
 	private Integer methodId; // 交易方式 ID
 	private String methodName; // 來自 TransactionMethod 實體
