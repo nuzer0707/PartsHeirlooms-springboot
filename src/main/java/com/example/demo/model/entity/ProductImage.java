@@ -27,9 +27,9 @@ public class ProductImage {
 	@JoinColumn(name = "product_id",nullable = false)
 	private Product product;
 
-    @Lob
-    @Column(name = "image_base64", nullable = false)
-    private String imageBase64;
+  @Lob
+  @Column(name = "image_base64", nullable = false)
+  private String imageBase64;
 
 
 	@CreationTimestamp
