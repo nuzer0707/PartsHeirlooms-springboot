@@ -21,8 +21,10 @@ public class ProductUpdateDto {
 	@Positive(message = "數量必須為正整數")
 	private Integer quantity;
 	
-	@Valid
+	
 	private ProductStatus status;
+	
+	private ProductContentDto content;
 	
 	@Valid
 	private List<ProductImageDto> images;
