@@ -11,8 +11,8 @@ import lombok.Data;
 public class ProductSummaryDto {
 	//產品概要 DTO (列表優化)
 	private Integer productId;
-	private Integer sellerUserId;
-	private String sellerUsername;
+    private Integer sellerUserId;
+    private String sellerUsername;
 	private Integer categoryId;
 	private String catrgoryName;
 	private BigDecimal price;

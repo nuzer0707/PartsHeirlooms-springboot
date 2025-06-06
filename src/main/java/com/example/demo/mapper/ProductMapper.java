@@ -70,7 +70,7 @@ public class ProductMapper {
 
 	// 將 Product 實體轉換為 ProductSummaryDto (用於列表頁，只包含預覽圖)
 
-	public ProductSummaryDto toProductSummaryDto(Product product) {
+	public ProductSummaryDto toSummaryDto(Product product) {
 
 		if (product == null) {
 			return null;
