@@ -14,10 +14,10 @@ public class ProductSummaryDto {
     private Integer sellerUserId;
     private String sellerUsername;
 	private Integer categoryId;
-	private String catrgoryName;
+	private String categoryName;
 	private BigDecimal price;
 	private ProductStatus status;
-	private LocalDateTime creatdeAt;
+	private LocalDateTime createdAt;
 	private String title;
 	private String shortDescription;
 	private String firstBase64Image;// 只包含第一張圖片的 Base64 字串作為預覽

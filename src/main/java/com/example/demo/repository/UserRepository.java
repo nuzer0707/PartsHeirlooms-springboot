@@ -4,13 +4,14 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.example.demo.model.entity.User;
 import com.example.demo.model.entity.enums.UserRole;
 
 import java.util.List;
 
-
+@Repository
 public interface UserRepository extends JpaRepository<User, Integer>{
 
 	@Query(value = "select user_id, username, password_hash, hash_salt, email, active, primary_role,email_token,last_email_sent_at,created_at from users where username=:username", nativeQuery = true)

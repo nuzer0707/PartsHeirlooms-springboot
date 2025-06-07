@@ -24,7 +24,7 @@ public class SellerVerification {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "verification_id")
-	private Integer verification;
+	private Integer verificationId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id",nullable = false)

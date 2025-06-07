@@ -25,11 +25,11 @@ public class Rating {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "rater_user_id",nullable = false)
-	private User raterUser;
+	private User raterUserId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "rated_user_id",nullable = false)
-	private User ratedUser;
+	private User ratedUserId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "transaction_id")

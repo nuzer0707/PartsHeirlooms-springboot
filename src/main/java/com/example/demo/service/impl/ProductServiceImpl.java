@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.exception.AccessDeniedException;
@@ -26,6 +27,7 @@ import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ProductService;
 
+@Service
 public class ProductServiceImpl implements ProductService {
 	
 	@Autowired
@@ -81,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
 		Product product = productRepository.findById(productId)
 				.orElseThrow(()->new ProductNotFoundException("找不到產品 ID: " + productId));
 		
-		boolean isAdmin =UserRole.ADMIN.equals(requestingUserId);
+		boolean isAdmin =UserRole.ADMIN.equals(requestingUserRole);
 		// 檢查產品的賣家 ID 是否與請求用戶 ID 相同
 		boolean isOwner = product.getSellerUser().getUserId().equals(requestingUserId);
 		
@@ -101,7 +103,7 @@ public class ProductServiceImpl implements ProductService {
 			 throw new UserNotFoundException("找不到賣家，ID: " + sellerUserId);
 		}
 		// 預設只顯示 For_Sale 狀態
-		return productRepository.findBySellerUserUserIdAndStatus(sellerUserId, ProductStatus.For_Sale)
+		return productRepository.findBySellerUser_UserIdAndStatus(sellerUserId, ProductStatus.For_Sale)
 				.stream()
 				.map(productMapper::toSummaryDto)
 				.collect(Collectors.toList());
@@ -115,7 +117,7 @@ public class ProductServiceImpl implements ProductService {
 			throw new CategoryNotFoundException("找不到分類 ID: " + categoryId);
 		}
 		// 預設只顯示 For_Sale 狀態。
-		return productRepository.findByCategoryIdAndStatus(categoryId, ProductStatus.For_Sale)
+		return productRepository.findByCategory_CategoryIdAndStatus(categoryId, ProductStatus.For_Sale)
 				.stream()
 				.map(productMapper::toSummaryDto)
 				.collect(Collectors.toList());
@@ -207,8 +209,21 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	@Transactional
-	public void deletProduct(Integer productId, Integer currentUserId, UserRole currentUserRole) {
-		// TODO Auto-generated method stub
+	public void deleteProduct(Integer productId, Integer currentUserId, UserRole currentUserRole) {
+		Product product =productRepository.findById(productId)
+						.orElseThrow(()->new ProductNotFoundException("找不到要刪除的產品 ID:"+productId));
+		 // 授權：只有賣家或 ADMIN 可以刪除
+		if(!product.getSellerUser().getUserId().equals(currentUserId)&&currentUserRole!=UserRole.ADMIN) {
+			throw new AccessDeniedException("您無權刪除此產品");
+		}
+		// 考慮是否要軟刪除 (例如，將狀態更改為 "DELETED") 而不是直接刪除。
+        // 目前為了簡單起見，允許擁有者或管理員刪除
+		try {
+			productRepository.delete(product);
+		} catch (Exception e) {
+			// logger.error("刪除產品時發生未知錯誤", e);
+			throw new ProductOperationException("刪除產品時發生未知錯誤，請稍後再試"+e.getMessage());
+		}
 		
 	}
 
@@ -216,8 +231,34 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional
 	public ProductDto updateProductStatus(Integer productId, ProductStatus newStatus, Integer currentUserId,
 			UserRole currentUserRole) {
-		// TODO Auto-generated method stub
-		return null;
+		Product product = productRepository.findById(productId)
+						.orElseThrow(()->new ProductNotFoundException("找不到要更新狀態的產品 ID:"+productId));
+		boolean isAmin = UserRole.ADMIN.equals(currentUserRole);
+		boolean isOwner = product.getSellerUser().getUserId().equals(currentUserId);
+		
+		if(!isAmin && !isOwner) {
+			throw new AccessDeniedException("您無權修改此產品狀態");
+		}
+		
+		// 賣家特定的狀態更改規則
+		if(isOwner && isAmin) {
+			// 賣家只能將狀態改為 Removed 或 For_Sale (假設賣家可以重新上架未售出的已下架商品)
+			if(newStatus != ProductStatus.Removed && newStatus != ProductStatus.For_Sale) {
+				throw new AccessDeniedException("賣家只能將產品狀態設置為 'Removed' (已下架) 或 'For_Sale' (待售)");	
+			}
+			// 防止賣家直接將狀態設置為 'Sold'
+			if(newStatus != ProductStatus.Sold) {
+				throw new AccessDeniedException("產品狀態不能由賣家直接設置為 'Sold' (已售出) 此狀態應由交易流程管理");
+			}
+		}
+	    // 管理員可以設置任何狀態
+        // 擁有者可以在限制範圍內設置為 For_Sale 或 Removed
+		product.setStatus(newStatus);
+		Product updateProduct = productRepository.save(product);
+		
+		return productMapper.toDto(updateProduct);
+		
+		
 	}
 
 }

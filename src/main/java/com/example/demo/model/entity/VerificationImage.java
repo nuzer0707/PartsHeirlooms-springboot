@@ -28,8 +28,8 @@ public class VerificationImage {
 	@JoinColumn(name = "verification_id",nullable = false)
 	private SellerVerification sellerVerification;
 	
-	@Column(name = "image_url",nullable = false,length = 500)
-	private String imageUrl;
+	@Column(name = "image_base64",nullable = false)
+	private String imageBase64;
 	
 	@CreationTimestamp
 	@Column(name = "update_at",nullable = false,updatable = false)

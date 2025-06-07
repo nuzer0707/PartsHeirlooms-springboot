@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.example.demo.model.dto.products.ProductAddDto;
 import com.example.demo.model.dto.products.ProductDto;
@@ -20,12 +21,14 @@ import com.example.demo.model.entity.ProductImage;
 import com.example.demo.model.entity.ProductTransactionDetail;
 import com.example.demo.model.entity.TransactionMethod;
 import com.example.demo.model.entity.User;
+import com.example.demo.repository.TransactionMethodRepository;
 
+@Component
 public class ProductMapper {
 
 	@Autowired
 	private ModelMapper modelMapper;
-
+	@Autowired
 	private TransactionMethodRepository transactionMethodRepository;
 
 	// 將 Product 實體轉換為 ProductDto (用於讀取產品詳情)
@@ -84,7 +87,7 @@ public class ProductMapper {
 
 		if (product.getCategory() != null) {
 			dto.setCategoryId(product.getCategory().getCategoryId());
-			dto.setCatrgoryName(product.getCategory().getCategoryName());
+			dto.setCategoryName(null);
 		}
 		if (product.getProductContent() != null) {
 			dto.setTitle(product.getProductContent().getTitle());

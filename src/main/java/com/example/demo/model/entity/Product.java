@@ -21,7 +21,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "prodoucts")
+@Table(name = "products")
 public class Product {
 
 	@Id
@@ -44,7 +44,7 @@ public class Product {
 	private Integer quantity;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "status",nullable = false,columnDefinition = "ENUM('For Sale','Sold','Removed') DEFAULT 'For Sale' ")
+	@Column(name = "status",nullable = false,columnDefinition = "ENUM('For_Sale','Sold','Removed') DEFAULT 'For_Sale' ")
 	private ProductStatus status;
 	
 	@OneToOne(mappedBy = "product" , cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true) 

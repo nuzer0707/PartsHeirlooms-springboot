@@ -40,7 +40,7 @@ public interface ProductService {
 	ProductDto updateProduct(Integer productId, ProductUpdateDto updateDto, Integer currentUserId,
 			UserRole currentUserRole);
 	// 刪除產品 (需要當前用戶 ID 和角色進行權限驗證)
-	void deletProduct(Integer productId,Integer currentUserId,UserRole currentUserRole);
+	void deleteProduct(Integer productId,Integer currentUserId,UserRole currentUserRole);
 	
 	// 更新產品狀態 (需要當前用戶 ID 和角色進行權限驗證)
 	ProductDto updateProductStatus(Integer productId,ProductStatus newStatus,Integer currentUserId,UserRole currentUserRole);
