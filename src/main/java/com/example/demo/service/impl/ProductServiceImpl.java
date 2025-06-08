@@ -247,7 +247,7 @@ public class ProductServiceImpl implements ProductService {
 				throw new AccessDeniedException("賣家只能將產品狀態設置為 'Removed' (已下架) 或 'For_Sale' (待售)");	
 			}
 			// 防止賣家直接將狀態設置為 'Sold'
-			if(newStatus != ProductStatus.Sold) {
+			if(newStatus == ProductStatus.Sold) {
 				throw new AccessDeniedException("產品狀態不能由賣家直接設置為 'Sold' (已售出) 此狀態應由交易流程管理");
 			}
 		}

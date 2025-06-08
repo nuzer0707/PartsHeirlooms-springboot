@@ -14,7 +14,7 @@ public class TransactionDto {
 	private Integer transactionId;
 	
 	// 產品資訊
-	private Product productId;
+	private Integer productId;
 	private String productTitle;
 	private String productFirstImageBases64;
 	
