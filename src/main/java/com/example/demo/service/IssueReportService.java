@@ -14,10 +14,12 @@ public interface IssueReportService {
 
 	IssueReportDto getReportById(Integer reportId, Integer requestingUserId, UserRole userRole);
 
-	List<IssueReportDto> getAllReportsForAdmin();
+	List<IssueReportDto> getAllReportsForAdmin(Integer reporterUserId);
 
 	List<IssueReportDto> getReportsByReporter(Integer reporterUserId);
 
 	IssueReportDto updateReportStatus(Integer reportId, IssueStatus newStatus, String adminRemarks, Integer adminUserId)
 			throws UserNotFoundException;
+
+	
 }
