@@ -1,11 +1,11 @@
 package com.example.demo.service.impl;
 
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.exception.ProductNotFoundException;
@@ -25,6 +25,7 @@ import com.example.demo.repository.TransactionRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.RatingService;
 
+@Service
 public class RatingServiceImpl implements RatingService{
 
 	@Autowired

@@ -37,5 +37,13 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	//根據產品 ID 和賣家 ID 查找產品，用於權限驗證
 	Optional<Product> findByProductIdAndSellerUser_UserId(Integer productId,Integer sellerUserid);
 
+	 // --- 新增方法 ---
+  /**
+   * 計算具有特定狀態的產品數量。
+   * @param status 產品狀態
+   * @return 符合條件的產品數量
+   */
+  long countByStatus(ProductStatus status); // 新增：Spring Data JPA 會自動實現這個查詢
+	
 
 }
