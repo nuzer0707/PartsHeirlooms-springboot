@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.exception.AccessDeniedException;
@@ -25,6 +26,7 @@ import com.example.demo.repository.TransactionRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.TransactionService;
 
+@Service
 public class TransactionServiceImpl implements TransactionService{
 	
 	@Autowired
@@ -144,6 +146,26 @@ public class TransactionServiceImpl implements TransactionService{
 		Transaction upTransaction = transactionRepository.save(transaction);
 		
 		return transactionMapper.toDto(upTransaction);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<TransactionDto> getTransactionsByBuyerAndStatuses(Integer buyerId, List<TransactionStatus> statuses) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<TransactionDto> getTransactionsBySellerAndStatuses(Integer sellerId, List<TransactionStatus> statuses) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TransactionDto buyerCancelTransaction(Integer transactionId, Integer buyerUserId)
+			throws UserNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
