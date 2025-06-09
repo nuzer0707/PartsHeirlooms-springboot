@@ -58,7 +58,7 @@ public class RatingServiceImpl implements RatingService{
 			
 			// 驗證是否已評價過
 			
-			if(ratingRepository.existsByTransaction_TransactionIdAndRaterUser_UserId(transaction.getTransactionId(), raterUserId)) {
+			if(ratingRepository.existsByTransaction_TransactionIdAndRaterUserId_UserId(transaction.getTransactionId(), raterUserId)) {
 				throw new ProductOperationException("您已經評價過此交易");
 			}
 			
@@ -86,7 +86,7 @@ public class RatingServiceImpl implements RatingService{
 			throw new UserNotFoundException("找不到被評價用戶 ID: "+ratedUserId);
 		}
 		return ratingRepository
-						.findByRatedUser_UserIdOrderByCreatedAtDesc(ratedUserId)
+						.findByRatedUserId_UserIdOrderByCreatedAtDesc(ratedUserId)
 						.stream()
 						.map(ratingMapper::toDto)
 						.collect(Collectors.toList());
@@ -131,7 +131,7 @@ public class RatingServiceImpl implements RatingService{
 	@Transactional(readOnly = true)
 	public boolean hasUserRatedTransaction(Integer transactionId, Integer raterUserId) {
 		return ratingRepository
-				.existsByTransaction_TransactionIdAndRaterUser_UserId(transactionId, raterUserId);
+				.existsByTransaction_TransactionIdAndRaterUserId_UserId(transactionId, raterUserId);
 	}
 
 }

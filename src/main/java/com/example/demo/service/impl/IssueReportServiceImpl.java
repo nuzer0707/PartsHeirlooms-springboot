@@ -63,9 +63,9 @@ public class IssueReportServiceImpl implements IssueReportService{
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<IssueReportDto> getAllReportsForAdmin(Integer reporterUserId) {
+	public List<IssueReportDto> getAllReportsForAdmin() {
 		return issueReportRepository
-				.findByReporterUser_UserIdOrderByCreatedAtDesc(reporterUserId)
+				.findAll()
 				.stream()
 				.map(issueReportMapper::toDto)
 				.collect(Collectors.toList());

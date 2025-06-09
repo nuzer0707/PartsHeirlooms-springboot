@@ -14,7 +14,7 @@ public interface IssueReportService {
 
 	IssueReportDto getReportById(Integer reportId, Integer requestingUserId, UserRole userRole);
 
-	List<IssueReportDto> getAllReportsForAdmin(Integer reporterUserId);
+	List<IssueReportDto> getAllReportsForAdmin();
 
 	List<IssueReportDto> getReportsByReporter(Integer reporterUserId);
 
