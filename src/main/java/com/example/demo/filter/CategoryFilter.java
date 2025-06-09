@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpSession;
 
 
 @WebFilter(urlPatterns = {"/category/*","/categorys/*"})
-public class LoginCategoryFilter extends BaseAuthFilter {
+public class CategoryFilter extends BaseAuthFilter {
 	
 	@Override
 	protected void doFilter(HttpServletRequest request,HttpServletResponse response,FilterChain chain) 

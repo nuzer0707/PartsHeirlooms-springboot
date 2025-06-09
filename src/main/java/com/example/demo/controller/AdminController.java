@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.exception.AccessDeniedException;
+import com.example.demo.exception.CategoryException;
 import com.example.demo.exception.CertException;
 import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.exception.ProductOperationException;
 import com.example.demo.exception.UserAlreadyExistsException;
 import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.model.dto.CategoryDto;
 import com.example.demo.model.dto.IssueReportDto;
 import com.example.demo.model.dto.PlatformOverviewDto;
 import com.example.demo.model.dto.RatingDto;
@@ -63,7 +66,6 @@ public class AdminController {
 
 	@Autowired
 	private ProductService productService;
-
 	@Autowired
 	private CategoryService categoryService;
 
@@ -398,5 +400,40 @@ public class AdminController {
 		SalesReportDto salesReportDto = statisticsService.getSalesReportOverall();
 		return ResponseEntity.ok(ApiResponse.success("銷售報告查詢成功", salesReportDto));
 	}
+	
+  // ==========================================================
+  //                         分類管理 (NUEVO / MOVIDO)
+  // ==========================================================
+	
+	//新增分類
+	@PostMapping("/categories")
+	public ResponseEntity<ApiResponse<CategoryDto>> addCategory(@Valid @RequestBody CategoryDto categoryDto ,BindingResult bindingResult ){
+		if(bindingResult.hasErrors()) {
+			throw new CategoryException("新增失敗:" + bindingResult.getAllErrors().get(0).getDefaultMessage());
+		}
+		categoryService.addCategory(categoryDto);
+		return ResponseEntity.ok(ApiResponse.success("Category 新增成功 ", categoryDto));
+		
+	} 
+	
+	// 修改分類
+	@PutMapping("/categories/{categoryId}")
+	public ResponseEntity<ApiResponse<CategoryDto>> updateCategory(@PathVariable Integer categoryId,@Valid @RequestBody CategoryDto categoryDto ,BindingResult bindingResult){
+		if(bindingResult.hasErrors()) {
+			throw new CategoryException("修改失敗:" + bindingResult.getAllErrors().get(0).getDefaultMessage());
+		}
+		categoryService.updateCategory(categoryId, categoryDto);
+		
+		return ResponseEntity.ok(ApiResponse.success("Category 修改成功 ", categoryDto));
+	}
+	
+	// 刪除分類
+	@DeleteMapping("/categories/{categoryId}")
+	public ResponseEntity<ApiResponse<Integer>> deleteCategory(@PathVariable Integer categoryId){
+		categoryService.deleteCategory(categoryId);
+		return ResponseEntity.ok(ApiResponse.success("Category 刪除成功 ", categoryId));
+	}
+
+	
 	
 }
