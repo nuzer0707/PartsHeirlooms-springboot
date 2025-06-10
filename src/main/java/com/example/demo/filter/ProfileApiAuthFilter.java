@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @WebFilter(urlPatterns = {"/profile/*"}) // <--- 修改於此，保護所有 /profile/ 下的路徑
-public class ProfileAuthFilter extends BaseAuthFilter{
+public class ProfileApiAuthFilter extends BaseAuthFilter{
 
 	
 	@Override
