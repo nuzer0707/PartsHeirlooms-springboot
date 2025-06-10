@@ -20,8 +20,8 @@ public class Message {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "mssage_id")
-	private Integer mssageId;
+	@Column(name = "message_id")
+	private Integer messageId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "sender_user_id",nullable = false)
@@ -35,9 +35,13 @@ public class Message {
 	@Column(name = "content",nullable = false,columnDefinition = "TEXT")
 	private String content;
 	
-  @CreationTimestamp
-  @Column(name = "created_at", nullable = false, updatable = false)
-  private LocalDateTime createdAt;
+	@CreationTimestamp
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private LocalDateTime createdAt;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "transaction_id")
+	private Transaction transaction;
 	
 	
 }
