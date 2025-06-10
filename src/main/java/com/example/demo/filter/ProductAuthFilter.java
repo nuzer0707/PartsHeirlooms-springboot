@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @WebFilter(urlPatterns = {"/products/*"})
-public class ProductApiAuthFilter extends BaseAuthFilter {
+public class ProductAuthFilter extends BaseAuthFilter {
 	
 	@Override
 	protected void doFilter(HttpServletRequest request,HttpServletResponse response,FilterChain chain) 

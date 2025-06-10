@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @WebFilter(urlPatterns = {"/admin/*"})
-public class AdminApiAuthFilter extends BaseAuthFilter {
+public class AdminAuthFilter extends BaseAuthFilter {
 
 	@Override
 	protected void doFilter(HttpServletRequest request,HttpServletResponse response,FilterChain chain) 

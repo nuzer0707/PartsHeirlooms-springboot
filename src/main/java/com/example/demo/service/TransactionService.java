@@ -21,9 +21,9 @@ public interface TransactionService {
 	
 	TransactionDto updateTransactionsStatus(Integer transactionId ,TransactionStatus  newStatus, Integer requestingUserId,UserRole userRole);
 
-	List<TransactionDto> getTransactionsByBuyerAndStatuses(Integer buyerId, List<TransactionStatus> statuses);
+	List<TransactionDto> getTransactionsByBuyerAndStatuses(Integer buyerId, List<TransactionStatus> statuses) throws UserNotFoundException;
 	
-	List<TransactionDto> getTransactionsBySellerAndStatuses(Integer sellerId, List<TransactionStatus> statuses);
+	List<TransactionDto> getTransactionsBySellerAndStatuses(Integer sellerId, List<TransactionStatus> statuses) throws UserNotFoundException;
 
 	TransactionDto buyerCancelTransaction(Integer transactionId, Integer buyerUserId) throws UserNotFoundException; // 新增買家取消
 
