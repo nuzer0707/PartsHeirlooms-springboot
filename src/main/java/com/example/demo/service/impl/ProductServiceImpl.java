@@ -261,4 +261,29 @@ public class ProductServiceImpl implements ProductService {
 		
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProductSummaryDto> getAllProductsBySeller(Integer sellerUserId) throws UserNotFoundException {
+		if (!userRepository.existsById(sellerUserId)) {
+      throw new UserNotFoundException("找不到賣家，ID: " + sellerUserId);
+		}
+		return productRepository.findBySellerUser_UserId(sellerUserId)
+					.stream()
+					.map(productMapper::toSummaryDto)
+					.collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ProductSummaryDto> getProductsBySellerAndStatus(Integer sellerUserId, ProductStatus status)
+			throws UserNotFoundException {
+		if (!userRepository.existsById(sellerUserId)) {
+      throw new UserNotFoundException("找不到賣家，ID: " + sellerUserId);
+  }
+		return productRepository.findBySellerUser_UserIdAndStatus(sellerUserId, status)
+				.stream()
+				.map(productMapper::toSummaryDto)
+				.collect(Collectors.toList());
+	}
+
 }

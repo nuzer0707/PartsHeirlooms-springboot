@@ -75,12 +75,12 @@ public class ProfileController {
 
 	// 使用者查詢自己的個人資料
 	@GetMapping("/user")
-	private ResponseEntity<ApiResponse<UserProfileDto>> getMyProfile(HttpSession session) {
+	public ResponseEntity<ApiResponse<UserProfileDto>> getMyProfile(HttpSession session) {
 
 		UserCert userCert = (UserCert) session.getAttribute("userCert");
 		if (userCert == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-					.body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "請先登入以查看個人資料"));
+			return unauthorizedGenericResponse("請先登入以查看個人資料");
+
 		}
 		try {
 			UserProfileDto userProfile = userService.getUserProfile(userCert.getUserId());
@@ -132,6 +132,10 @@ public class ProfileController {
 			return unauthorizedGenericResponse("請先登入以查看收藏商品");
 
 		List<ProductSummaryDto> favorites = favoriteService.getFavoritesByUserId(userCert.getUserId());
+
+		if (favorites.isEmpty()) {
+			return ResponseEntity.ok(ApiResponse.success("您的收藏列表是空的", favorites));
+		}
 		return ResponseEntity.ok(ApiResponse.success("查詢收藏商品成功", favorites));
 	}
 
@@ -235,7 +239,9 @@ public class ProfileController {
 			return unauthorizedGenericResponse("請先登入以查看問題回報紀錄");
 
 		List<IssueReportDto> reportDtos = issueReportService.getReportsByReporter(userCert.getUserId());
-
+		if(reportDtos.isEmpty()) {
+			 return ResponseEntity.ok(ApiResponse.success("您沒有提交過問題回報", reportDtos));
+		}
 		return ResponseEntity.ok(ApiResponse.success("查詢問題回報紀錄成功", reportDtos));
 	}
 
@@ -299,18 +305,21 @@ public class ProfileController {
 	}
 
 	// ==========================================================
-	// 買家 - 當前訂單 (未完成)
+	// 買家 - 當前訂單
 	// ==========================================================
 
-	@GetMapping("/orders/current")
-	public ResponseEntity<ApiResponse<List<TransactionDto>>> getMyCurrentOrders(HttpSession session) {
+	@GetMapping("/orders/buyer/current")
+	public ResponseEntity<ApiResponse<List<TransactionDto>>> getMyCurrentOrders(HttpSession session) throws UserNotFoundException {
 		UserCert userCert = (UserCert) session.getAttribute("userCert");
 		if (userCert == null) {
 			return unauthorizedGenericResponse("請先登入以查看當前訂單");
 		}
-		List<TransactionStatus> currentStatus = Arrays.asList(TransactionStatus.Pending_Payment, TransactionStatus.Paid,
-				TransactionStatus.Processing, TransactionStatus.Shipped);
-		try {
+		List<TransactionStatus> currentStatus = Arrays.asList(
+				TransactionStatus.Pending_Payment,
+				TransactionStatus.Paid,
+				TransactionStatus.Processing,
+				TransactionStatus.Shipped);
+		//try {
 			List<TransactionDto> transactionDtos = transactionService.getTransactionsByBuyerAndStatuses(userCert.getUserId(),
 					currentStatus);
 			if (transactionDtos.isEmpty()) {
@@ -318,13 +327,13 @@ public class ProfileController {
 			}
 			return ResponseEntity.ok(ApiResponse.success("查詢當前訂單成功", transactionDtos));
 
-		} catch (UserNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系統錯誤：" + e.getMessage()));
-		}
+		//} catch (UserNotFoundException e) {
+		//	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		//			.body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系統錯誤：" + e.getMessage()));
+		//}
 	}
 
-	@PutMapping("/orders/{transactionId}/cancel")
+	@PutMapping("/orders/buyer/{transactionId}/cancel")
 	public ResponseEntity<ApiResponse<TransactionDto>> cancelMyOrder(@PathVariable Integer transactionId,
 			HttpSession session) {
 		UserCert userCert = (UserCert) session.getAttribute("userCert");
@@ -351,26 +360,28 @@ public class ProfileController {
 	// 買家 - 交易歷史 (已完成/已取消)
 	// ==========================================================
 
-	@GetMapping("/orders/history")
-	public ResponseEntity<ApiResponse<List<TransactionDto>>> getMyOrderHistory(HttpSession session) {
+	@GetMapping("/orders/buyer/history")
+	public ResponseEntity<ApiResponse<List<TransactionDto>>> getMyOrderHistory(HttpSession session) throws UserNotFoundException {
 		UserCert userCert = (UserCert) session.getAttribute("userCert");
 		if (userCert == null) {
 			return unauthorizedGenericResponse("請先登入以查看交易歷史");
 		}
 		List<TransactionStatus> history = Arrays.asList(TransactionStatus.Completed, TransactionStatus.Cancelled);
-		try {
+		//try {
 			List<TransactionDto> transactionDtos = transactionService.getTransactionsByBuyerAndStatuses(userCert.getUserId(),
 					history);
 			if (transactionDtos.isEmpty()) {
 				return ResponseEntity.ok(ApiResponse.success("您目前沒有歷史訂單紀錄", transactionDtos));
 			}
 			return ResponseEntity.ok(ApiResponse.success("查詢交易歷史成功", transactionDtos));
-		} catch (UserNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系統錯誤：" + e.getMessage()));
-		}
+		//} catch (UserNotFoundException e) {
+		//	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		//			.body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系統錯誤：" + e.getMessage()));
+		//}
 	}
 
+	
+	
 	@GetMapping("/orders/{transactionId}")
 	public ResponseEntity<ApiResponse<TransactionDto>> getMyTransactionDetails(@PathVariable Integer transactionId,
 			HttpSession session) {

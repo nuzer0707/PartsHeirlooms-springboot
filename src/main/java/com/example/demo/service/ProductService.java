@@ -45,9 +45,23 @@ public interface ProductService {
 	// 更新產品狀態 (需要當前用戶 ID 和角色進行權限驗證)
 	ProductDto updateProductStatus(Integer productId,ProductStatus newStatus,Integer currentUserId,UserRole currentUserRole);
 
+	/**
+   * 獲取指定賣家刊登的所有狀態的商品列表。
+   * @param sellerUserId 賣家ID
+   * @return 商品概要列表
+   * @throws UserNotFoundException 如果找不到賣家
+   */
+	List<ProductSummaryDto> getAllProductsBySeller(Integer sellerUserId) throws UserNotFoundException;
 
-
-
+	/**
+   * 獲取指定賣家刊登的特定狀態的商品列表。
+   * @param sellerUserId 賣家ID
+   * @param status 商品狀態
+   * @return 商品概要列表
+   * @throws UserNotFoundException 如果找不到賣家
+   */
+	
+	List<ProductSummaryDto> getProductsBySellerAndStatus(Integer sellerUserId, ProductStatus status) throws UserNotFoundException;
 
 
 
