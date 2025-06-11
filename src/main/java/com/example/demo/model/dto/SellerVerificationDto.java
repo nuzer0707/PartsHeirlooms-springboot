@@ -17,7 +17,9 @@ public class SellerVerificationDto {
 	private VerificationStatus status;
 	private String adminRemarks;
 	private LocalDateTime reviewedAt;
-	private User reviewedByAdmin;
+	//private User reviewedByAdmin;
+	private Integer reviewedByAdminId; 
+	 private String reviewedByAdminUsername;
 	
 	private List<String> verificationImageBases64;
 	

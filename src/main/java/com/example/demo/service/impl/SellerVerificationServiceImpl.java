@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,7 @@ public class SellerVerificationServiceImpl implements SellerVerificationService{
 	private SellerVerificationRepository verificationRepository;
 	@Autowired
 	private UserRepository userRepository;
-	
+	@Autowired
 	private SellerVerificationMapper verificationMapper;
 	
 	@Override
@@ -79,11 +80,24 @@ public class SellerVerificationServiceImpl implements SellerVerificationService{
 	@Override
 	@Transactional(readOnly = true)
 	public List<SellerVerificationDto> getAllPendingVerificationsForAdmin() {
-		return verificationRepository
-				.findByStatusOrderBySubmittedAtAsc(VerificationStatus.Pending)
-				.stream()
-				.map(verificationMapper::toDto)
-				.collect(Collectors.toList());
+		 List<SellerVerification> verifications = verificationRepository
+         .findByStatusOrderBySubmittedAtAsc(VerificationStatus.Pending);
+
+ return verifications.stream().map(verification -> {
+     // 手動初始化需要的懶加載關聯
+     if (verification.getUser() != null) {
+         Hibernate.initialize(verification.getUser()); // 初始化 User 代理
+         // 如果 User 內部還有懶加載的，也需要處理
+     }
+     if (verification.getReviewedByAdmin() != null) {
+         Hibernate.initialize(verification.getReviewedByAdmin()); // 初始化 reviewedByAdmin 代理
+     }
+     if (verification.getVerificationImages() != null) {
+         Hibernate.initialize(verification.getVerificationImages()); // 初始化圖片集合代理
+         // 如果 VerificationImage 內部還有懶加載，也需要處理
+     }
+     return verificationMapper.toDto(verification); // 現在調用 toDto
+ }).collect(Collectors.toList());
 	}
 
 	@Override

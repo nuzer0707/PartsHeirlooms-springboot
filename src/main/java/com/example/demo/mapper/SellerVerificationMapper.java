@@ -28,7 +28,8 @@ public class SellerVerificationMapper {
 			dto.setUsername(verification.getUser().getUsername());
 		}
 		if (verification.getReviewedByAdmin() != null) {
-			dto.setReviewedByAdmin(verification.getReviewedByAdmin());
+			dto.setReviewedByAdminId(verification.getReviewedByAdmin().getUserId());
+			dto.setReviewedByAdminUsername(verification.getReviewedByAdmin().getUsername());
 		}
 		if (verification.getVerificationImages() != null) {
 			dto.setVerificationImageBases64(verification.getVerificationImages().stream()
