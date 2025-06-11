@@ -1,7 +1,8 @@
 package com.example.demo.model.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+
 
 import jakarta.persistence.*;
 
@@ -31,8 +32,8 @@ public class ProductTransactionDetail {
 	@JoinColumn(name = "method_id",nullable = false)
 	private TransactionMethod transactionMethod;
 	
-	@Column(name = "meetup_Time")
-	private LocalTime meetupTime;
+	@Column(name = "meetup_time")
+	private LocalDateTime meetupTime;
 	
 	@Column(name = "general_notes",length = 255)
 	private String generalNotes;

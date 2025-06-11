@@ -30,7 +30,7 @@ public class ProductImage {
   @Lob
   @Column(name = "image_base64", nullable = false)
   private String imageBase64;
-
+  
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)

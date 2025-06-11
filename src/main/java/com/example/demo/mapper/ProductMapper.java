@@ -21,6 +21,7 @@ import com.example.demo.model.entity.ProductImage;
 import com.example.demo.model.entity.ProductTransactionDetail;
 import com.example.demo.model.entity.TransactionMethod;
 import com.example.demo.model.entity.User;
+import com.example.demo.model.entity.enums.ProductStatus;
 import com.example.demo.repository.TransactionMethodRepository;
 
 @Component
@@ -78,6 +79,7 @@ public class ProductMapper {
 		if (product == null) {
 			return null;
 		}
+		
 		ProductSummaryDto dto = modelMapper.map(product, ProductSummaryDto.class);
 
 		if (product.getSellerUser() != null) {
@@ -87,8 +89,9 @@ public class ProductMapper {
 
 		if (product.getCategory() != null) {
 			dto.setCategoryId(product.getCategory().getCategoryId());
-			dto.setCategoryName(null);
+			dto.setCategoryName(product.getCategory().getCategoryName());
 		}
+		
 		if (product.getProductContent() != null) {
 			dto.setTitle(product.getProductContent().getTitle());
 			dto.setShortDescription(product.getProductContent().getShortDescription());
@@ -123,6 +126,8 @@ public class ProductMapper {
 		product.setCategory(category);
 		product.setPrice(dto.getPrice());
 		product.setQuantity(dto.getQuantity());
+		product.setStatus(ProductStatus.For_Sale);
+		
 		// 狀態在 Product 實體的 @PrePersist 中預設為 'For_Sale'
 
 		// 產品內容
@@ -141,14 +146,29 @@ public class ProductMapper {
 
 		// 產品交易明細
 		if (dto.getTransactionDetails() != null) {
-			for (ProductTransactionDetailInputDto detailDto : dto.getTransactionDetails()) {
-				TransactionMethod method = transactionMethodRepository.findById(detailDto.getMethodId())
-						.orElseThrow(() -> new IllegalArgumentException("無效的交易方式 ID: " + detailDto.getMethodId()));
-				ProductTransactionDetail detail = new ProductTransactionDetail();
-				modelMapper.map(detailDto, detail); // 將 DTO 的值映射到實體
-				detail.setTransactionMethod(method);
-				detail.setProduct(product);// 建立雙向關聯
-				product.getTransactionDetails().add(detail);
+			 for (ProductTransactionDetailInputDto detailDto : dto.getTransactionDetails()) {
+         TransactionMethod method = transactionMethodRepository.findById(detailDto.getMethodId())
+                 .orElseThrow(() -> new IllegalArgumentException("無效的交易方式 ID: " + detailDto.getMethodId()));
+
+         ProductTransactionDetail detail = new ProductTransactionDetail(); // 創建新的實體
+
+         // ---- 開始明確映射 ProductTransactionDetail 的字段 ----
+         // 假設 ProductTransactionDetailInputDto 有以下 getter 方法
+         // 並且 ProductTransactionDetail 實體有對應的 setter 方法
+         detail.setMeetupTime(detailDto.getMeetupTime());
+         detail.setMeetupLatitude(detailDto.getMeetupLatitude());
+         detail.setMeetupLongitude(detailDto.getMeetupLongitude());
+         detail.setGeneralNotes(detailDto.getGeneraNotes());
+         // 如果還有其他從 DTO 映射過來的字段，在這裡添加
+         // ---- 結束明確映射 ----
+
+         detail.setTransactionMethod(method); // 設置關聯的交易方式
+         detail.setProduct(product);          // 建立與 Product 的雙向關聯
+
+         // 如果 ProductTransactionDetail 也有 createdAt 且不由DB自動生成
+         // if (detail.getCreatedAt() == null) detail.setCreatedAt(java.time.Instant.now());
+
+         product.getTransactionDetails().add(detail); // 添加到 Product 的集合中
 			}
 		}
 		return product;

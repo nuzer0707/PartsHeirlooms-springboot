@@ -45,5 +45,13 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
    */
   long countByStatus(ProductStatus status); // 新增：Spring Data JPA 會自動實現這個查詢
 	
+  @Query("SELECT DISTINCT p FROM Product p " +
+      "JOIN p.productContent pc " +
+      "JOIN p.category c " +
+      "WHERE (LOWER(pc.title) LIKE LOWER(concat('%', :keyword, '%')) OR LOWER(c.categoryName) LIKE LOWER(concat('%', :keyword, '%'))) " +
+      "AND p.status = com.example.demo.model.entity.enums.ProductStatus.For_Sale")
+  List<Product> findByTitleOrCategoryNameContainingIgnoreCaseAndStatusForSale(@Param("keyword") String keyword);
+  
+  
 
 }

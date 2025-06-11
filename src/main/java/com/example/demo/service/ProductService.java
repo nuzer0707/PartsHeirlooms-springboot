@@ -31,8 +31,12 @@ public interface ProductService {
 	List<ProductSummaryDto> getProductsByCategory(Integer categoryId);
 
 	// 根據產品標題關鍵字查找產品 (預設只顯示 "For_Sale" 狀態)
-	List<ProductSummaryDto> findProductsByTitle(String keywork);
+	List<ProductSummaryDto> findProductsByTitle(String keyword);
 
+	//新增：根據關鍵字同時搜索產品標題和分類名稱
+  List<ProductSummaryDto> findProductsByTitleOrCategoryName(String keyword);
+	
+	
 	// 創建新產品 (賣家 ID 從 session 獲取)
 	ProductDto addProduct(ProductAddDto addDto, Integer sellerUserId) throws UserNotFoundException;
 

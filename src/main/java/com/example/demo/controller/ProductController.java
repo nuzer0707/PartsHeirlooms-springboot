@@ -1,10 +1,12 @@
 package com.example.demo.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -79,12 +81,19 @@ public class ProductController {
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<ProductSummaryDto>>> searchProducts(
     		@RequestParam String keyword){
-    	List<ProductSummaryDto> products = 
-    			productService.findProductsByTitle(keyword);
-    	if(products.isEmpty()) {
-    		return ResponseEntity.ok(ApiResponse.success("找不到與 '" + keyword + "' 相關的商品", products));
-    	}
-    	return ResponseEntity.ok(ApiResponse.success("商品搜索成功",products));
+      String trimmedKeyword = StringUtils.trimWhitespace(keyword);
+      if (!StringUtils.hasText(trimmedKeyword)) {
+          return ResponseEntity.ok(ApiResponse.success("請輸入有效的搜索關鍵字。", Collections.emptyList()));
+      }
+
+      // 調用新的 Service 方法
+      List<ProductSummaryDto> products =
+              productService.findProductsByTitleOrCategoryName(trimmedKeyword);
+
+      if (products.isEmpty()) {
+          return ResponseEntity.ok(ApiResponse.success("找不到與 '" + trimmedKeyword + "' 相關的商品。", products));
+      }
+      return ResponseEntity.ok(ApiResponse.success("商品搜索成功。", products));
     }
 	
 	

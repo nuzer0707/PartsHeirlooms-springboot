@@ -1,11 +1,13 @@
 package com.example.demo.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.example.demo.exception.AccessDeniedException;
 import com.example.demo.exception.CategoryNotFoundException;
@@ -125,15 +127,33 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ProductSummaryDto> findProductsByTitle(String keywork) {
+	public List<ProductSummaryDto> findProductsByTitle(String keyword) {
 		// 回傳類型改為 ProductSummaryDto
-		return productRepository.findByTitleContainingIgnoreCase(keywork)
+		return productRepository.findByTitleContainingIgnoreCase(keyword)
 				.stream()
 				// 公開搜索時僅顯示 'For_Sale' 狀態的產品
 				.filter(p->p.getStatus()==ProductStatus.For_Sale)
 				.map(productMapper::toSummaryDto)
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+  @Transactional(readOnly = true)
+  public List<ProductSummaryDto> findProductsByTitleOrCategoryName(String keyword) {
+      if (!StringUtils.hasText(keyword)) {
+          return Collections.emptyList();
+      }
+      // 調用 Repository 中新的、能同時搜索標題和分類的方法
+      List<Product> products = productRepository.findByTitleOrCategoryNameContainingIgnoreCaseAndStatusForSale(keyword);
+      return products.stream()
+              // .filter(p -> p.getStatus() == ProductStatus.For_Sale) // 如果 Repository 查詢已包含狀態過濾，則此行可省略
+              .map(productMapper::toSummaryDto)
+              .collect(Collectors.toList());
+  }
+	
+	
+	
+	
 
 	@Override
 	@Transactional

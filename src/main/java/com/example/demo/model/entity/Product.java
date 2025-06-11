@@ -45,7 +45,7 @@ public class Product {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status",nullable = false,columnDefinition = "ENUM('For_Sale','Sold','Removed') DEFAULT 'For_Sale' ")
-	private ProductStatus status;
+	private ProductStatus status = ProductStatus.For_Sale;;
 	
 	@OneToOne(mappedBy = "product" , cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true) 
 	private ProductContent productContent;
