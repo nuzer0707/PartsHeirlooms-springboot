@@ -161,7 +161,7 @@ public class AdminController {
 	// 產品管理
 	// ==========================================================
 
-	@GetMapping("/product")
+	@GetMapping("/products")
 	public ResponseEntity<ApiResponse<List<ProductSummaryDto>>> getAllProductsForAdmin() {
 
 		List<ProductSummaryDto> products = productService.getAllProductsFotAdmin();
@@ -174,7 +174,7 @@ public class AdminController {
 
 	}
 
-	@PutMapping("/product/{productId}/status")
+	@PutMapping("/products/{productId}/status")
 	public ResponseEntity<ApiResponse<ProductDto>> updateAnyProductStatus(@PathVariable Integer productId,
 			@RequestParam ProductStatus status, HttpSession session) {
 
