@@ -35,8 +35,8 @@ public class IssueReport {
 	columnDefinition = "ENUM('PRODUCT','USER','GENERAL')")
 	private ReportTargetType targetType;
 	
-	@Column(name = "targer_id")
-	private Integer targerId;
+	@Column(name = "target_id")
+	private Integer targetId;
 	
 	@Column(name = "reason_category",nullable = false,length = 100)
 	private String reasonCategory;

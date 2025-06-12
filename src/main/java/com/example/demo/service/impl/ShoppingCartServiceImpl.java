@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.exception.ProductNotFoundException;
@@ -19,6 +20,8 @@ import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ShoppingCartService;
 
+
+@Service
 public class ShoppingCartServiceImpl implements ShoppingCartService{
 	
 	@Autowired
@@ -81,6 +84,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
 	public ShoppingCartDto updateItemQuantity(Integer userId, Integer productId, Integer quantity) {
 		Product product = productRepository.findById(productId)
         .orElseThrow(() -> new ProductNotFoundException("找不到產品 ID: " + productId));
+		
 		if(product.getQuantity()<quantity) {
 			 throw new ProductOperationException("庫存不足，剩餘庫存：" + product.getQuantity());
 		}

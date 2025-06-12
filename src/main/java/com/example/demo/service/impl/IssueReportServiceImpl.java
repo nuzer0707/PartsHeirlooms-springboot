@@ -28,7 +28,7 @@ public class IssueReportServiceImpl implements IssueReportService{
 	private IssueReportRepository issueReportRepository;
 	@Autowired
 	private UserRepository userRepository;
-	
+	@Autowired
 	private IssueReportMapper issueReportMapper;
 	
 	

@@ -1,6 +1,7 @@
 package com.example.demo.mapper;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.model.dto.IssueReportDto;
@@ -11,6 +12,7 @@ import com.example.demo.model.entity.User;
 @Component
 public class IssueReportMapper {
 	
+	@Autowired
  	private ModelMapper modelMapper;
  	
  	public IssueReportDto toDto(IssueReport issueReport) {
@@ -23,6 +25,8 @@ public class IssueReportMapper {
  			dto.setReporterUsername(issueReport.getReporterUser().getUsername());
  		}
  		
+ 		 
+         dto.setReasonCategory(issueReport.getReasonCategory());
  		return dto;
  	}
  	
@@ -32,7 +36,7 @@ public class IssueReportMapper {
 		}
 		IssueReport entity = modelMapper.map(submitDto,IssueReport.class);
 		entity.setReporterUser(reporterUser);
-		entity.setTargerId(submitDto.getTargetTypeId());
+		entity.setTargetId(submitDto.getTargetTypeId());
 		
 		return entity;
 		

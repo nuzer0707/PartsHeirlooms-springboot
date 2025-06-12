@@ -61,5 +61,14 @@ public class Transaction {
   @UpdateTimestamp
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
-	
+
+  @OneToOne(
+	        mappedBy = "transaction",
+	        cascade = CascadeType.ALL,
+	        fetch = FetchType.LAZY,
+	        orphanRemoval = true
+	    )
+	    private TransactionShipmentDetail shipmentDetail;
+
+  
 }

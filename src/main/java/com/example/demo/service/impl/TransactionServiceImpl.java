@@ -1,6 +1,9 @@
 package com.example.demo.service.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +15,24 @@ import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.exception.ProductOperationException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.mapper.TransactionMapper;
+import com.example.demo.model.dto.CheckoutItemDto;
+import com.example.demo.model.dto.CheckoutRequestDto;
+import com.example.demo.model.dto.ShippingInfoDto;
 import com.example.demo.model.dto.TransactionDto;
+import com.example.demo.model.entity.CartItem;
 import com.example.demo.model.entity.Product;
 import com.example.demo.model.entity.ProductTransactionDetail;
 import com.example.demo.model.entity.Transaction;
+import com.example.demo.model.entity.TransactionMethod;
+import com.example.demo.model.entity.TransactionShipmentDetail;
 import com.example.demo.model.entity.User;
 import com.example.demo.model.entity.enums.ProductStatus;
 import com.example.demo.model.entity.enums.TransactionStatus;
 import com.example.demo.model.entity.enums.UserRole;
+import com.example.demo.repository.CartItemRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.ProductTransactionDetailRepository;
+import com.example.demo.repository.TransactionMethodRepository;
 import com.example.demo.repository.TransactionRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.TransactionService;
@@ -40,9 +51,16 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Autowired
 	private ProductTransactionDetailRepository productTransactionDetailRepository;
-
+	
+	@Autowired
+	private CartItemRepository cartItemRepository;
+	
 	@Autowired
 	private TransactionMapper transactionMapper;
+	
+	@Autowired
+	private TransactionMethodRepository transactionMethodRepository;
+	
 
 	@Override
 	@Transactional
@@ -181,5 +199,79 @@ public class TransactionServiceImpl implements TransactionService {
 		return transactionMapper.toDto(cancelledTransaction);
 	
 	}
+
+	@Override
+	public List<TransactionDto> createTransactionsFromCart(Integer userId, CheckoutRequestDto checkoutRequest) throws UserNotFoundException {
+		 List<CheckoutItemDto> checkoutItems = checkoutRequest.getItems();
+		 
+		 if (checkoutItems.isEmpty()) {
+	            throw new ProductOperationException("結帳項目不能為空，無法建立交易");
+	        }
+		 // 檢查是否需要運送資訊
+		 boolean requiresShipping = checkoutItems.stream()
+	                .anyMatch(item -> item.getChosenTransactionMethodId().equals(TransactionMethod.ID_SHIPPING));
+		 
+		 if (requiresShipping && checkoutRequest.getShippingInfo() == null) {
+	            throw new IllegalArgumentException("選擇物流運送時，必須提供運送資訊");
+	        }
+		 
+		 User buyer = userRepository.findById(userId)
+	                .orElseThrow(() -> new UserNotFoundException("找不到使用者 ID: " + userId));
+		 
+		 List<Transaction> newTransactions = new ArrayList<>();
+		 
+		 
+		 
+		 for (CheckoutItemDto checkoutItem : checkoutItems) {
+	            CartItem cartItem = cartItemRepository.findByUser_UserIdAndProduct_ProductId(userId, checkoutItem.getProductId())
+	                    .orElseThrow(() -> new ProductOperationException("非法請求：購物車中找不到商品 ID: " + checkoutItem.getProductId()));
+	            
+	            Product product = cartItem.getProduct();
+	            int quantityToBuy = cartItem.getQuantity();
+
+	            if (product.getQuantity() < quantityToBuy) {
+	                throw new ProductOperationException("商品 '" + product.getProductContent().getTitle() + "' 庫存不足，訂單已取消");
+	            }
+	            
+	            product.setQuantity(product.getQuantity() - quantityToBuy);
+	            if (product.getQuantity() == 0) {
+	                product.setStatus(ProductStatus.Sold);
+	            }
+	            productRepository.save(product);
+
+	            Transaction newTransaction = new Transaction();
+	            newTransaction.setBuyerUser(buyer);
+	            newTransaction.setSellerUser(product.getSellerUser());
+	            newTransaction.setProductId(product);
+	            newTransaction.setFinalPrice(product.getPrice().multiply(BigDecimal.valueOf(quantityToBuy)));
+	            newTransaction.setStatus(TransactionStatus.Paid);
+
+	            TransactionShipmentDetail shipmentDetail = new TransactionShipmentDetail();
+	            
+	            TransactionMethod chosenMethod = transactionMethodRepository.findById(checkoutItem.getChosenTransactionMethodId())
+	                    .orElseThrow(() -> new ProductOperationException("無效的交易方式 ID: " + checkoutItem.getChosenTransactionMethodId()));
+	            shipmentDetail.setMethodName(chosenMethod.getName());
+
+	            if (chosenMethod.getMethodId().equals(TransactionMethod.ID_SHIPPING)) {
+	                ShippingInfoDto shippingInfo = checkoutRequest.getShippingInfo();
+	                shipmentDetail.setAddress(shippingInfo.getAddress());
+	            }
+
+	            newTransaction.setShipmentDetail(shipmentDetail);
+	            shipmentDetail.setTransaction(newTransaction);
+	            
+	            newTransactions.add(transactionRepository.save(newTransaction));
+	        }
+
+	        List<Integer> productIdsToRemove = checkoutItems.stream().map(CheckoutItemDto::getProductId).collect(Collectors.toList());
+	        List<CartItem> itemsToRemove = cartItemRepository.findByUser_UserIdAndProduct_ProductIdIn(userId, productIdsToRemove);
+	        cartItemRepository.deleteAll(itemsToRemove);
+
+	        return newTransactions.stream()
+	                .map(transactionMapper::toDto)
+	                .collect(Collectors.toList());
+	}
+
+	
 
 }

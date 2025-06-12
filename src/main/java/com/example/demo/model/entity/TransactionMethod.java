@@ -19,6 +19,12 @@ import lombok.NoArgsConstructor;
 uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 public class TransactionMethod {
 	
+	// ▼▼▼ 在 Entity 中定義公開的靜態常數 ▼▼▼
+    public static final Integer ID_SHIPPING = 1; // 物流
+    public static final Integer ID_MEETUP = 2;   // 面交
+    // ▲▲▲ 定義結束 ▲▲▲
+
+    
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "method_id")

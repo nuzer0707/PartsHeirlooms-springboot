@@ -30,4 +30,6 @@ public class TransactionDto {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	
+	//運送資訊
+	private TransactionShipmentDetailDto shipmentDetail;
 }

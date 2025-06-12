@@ -28,6 +28,8 @@ public class ProductTransactionDetail {
 	@JoinColumn(name = "product_id",nullable = false)
 	private Product product;
 	
+	
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "method_id",nullable = false)
 	private TransactionMethod transactionMethod;
