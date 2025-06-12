@@ -26,7 +26,7 @@ public class MessageMapper {
 			dto.setSenderUsername(message.getSenderUser().getUsername());
 		}
 		if(message.getReceiverUser()!=null) {
-			dto.setSenderUserId(message.getReceiverUser().getUserId());
+			dto.setReceiverUserId(message.getReceiverUser().getUserId());
 			dto.setReceiverUsername(message.getReceiverUser().getUsername());
 		}
 		if(message.getTransaction()!=null){

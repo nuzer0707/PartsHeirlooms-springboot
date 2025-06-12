@@ -21,10 +21,12 @@ public class RatingMapper {
 			return null;
 		}
 		RatingDto dto = modelMapper.map(rating, RatingDto.class);
-		if(rating.getRatedUserId()!=null) {
-			dto.setRatedUserId(rating.getRaterUserId().getUserId());
-			dto.setRatedUsername(rating.getRaterUserId().getUsername());
+		 // 1. 處理「評價者 (Rater)」的資訊
+		if(rating.getRaterUserId()!=null) {
+			dto.setRaterUserId(rating.getRaterUserId().getUserId());
+			dto.setRaterUsername(rating.getRaterUserId().getUsername());
 		}
+		 // 2. 處理「被評價者 (Rated)」的資訊
 		if(rating.getRatedUserId()!=null) {
 			dto.setRatedUserId(rating.getRatedUserId().getUserId());
 			dto.setRatedUsername(rating.getRatedUserId().getUsername());

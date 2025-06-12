@@ -29,7 +29,8 @@ public class MessageServiceImpl implements MessageService {
 
 	@Autowired
 	private UserRepository userRepository;
-
+	
+	@Autowired
 	private TransactionRepository transactionRepository;
 
 	@Autowired

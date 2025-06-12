@@ -1,4 +1,4 @@
-package com.example.demo.model.dto;
+package com.example.demo.model.dto.checkout;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

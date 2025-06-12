@@ -3,8 +3,8 @@ package com.example.demo.service;
 import java.util.List;
 
 import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.model.dto.CheckoutRequestDto;
 import com.example.demo.model.dto.TransactionDto;
+import com.example.demo.model.dto.checkout.CheckoutRequestDto;
 import com.example.demo.model.entity.enums.TransactionStatus;
 import com.example.demo.model.entity.enums.UserRole;
 

@@ -118,7 +118,7 @@ public class SellerVerificationServiceImpl implements SellerVerificationService{
 		if(!UserRole.ADMIN.equals(admin.getPrimaryRole())) {
 		  throw new AccessDeniedException("只有管理員可以審核賣家資格");
 		}
-		SellerVerification verification = verificationRepository.findById(adminUserId)
+		SellerVerification verification = verificationRepository.findById(verifivationId)
 				.orElseThrow(()->new ProductNotFoundException("找不到賣家資格審核申請 ID: "+verifivationId));
 		
 		verification.setStatus(reviewDto.getStatus());

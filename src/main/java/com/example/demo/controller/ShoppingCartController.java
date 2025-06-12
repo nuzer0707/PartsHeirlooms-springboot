@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,7 +28,8 @@ import jakarta.validation.Valid;
 @RequestMapping("/cart")
 @CrossOrigin(origins = { "http://localhost:5173", "http://localhost:8002" }, allowCredentials = "true")
 public class ShoppingCartController {
-
+	
+	@Autowired
 	private ShoppingCartService shoppingCartService;
 
 	@GetMapping
@@ -59,7 +61,7 @@ public class ShoppingCartController {
 	public ResponseEntity<ApiResponse<ShoppingCartDto>> removeItemFromCart(@PathVariable Integer productId,
 			HttpSession session) {
 		UserCert userCert = (UserCert) session.getAttribute("userCert");
-		shoppingCartService.clearCart(userCert.getUserId());
+		shoppingCartService.removeItemFromCart(userCert.getUserId(),productId);
 		return ResponseEntity.ok(ApiResponse.success("商品已從購物車移除", null));
 	}
 

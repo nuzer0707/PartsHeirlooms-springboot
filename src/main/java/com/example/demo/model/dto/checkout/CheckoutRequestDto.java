@@ -1,6 +1,8 @@
-package com.example.demo.model.dto;
+package com.example.demo.model.dto.checkout;
 
 import java.util.List;
+
+import com.example.demo.model.dto.ShippingInfoDto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

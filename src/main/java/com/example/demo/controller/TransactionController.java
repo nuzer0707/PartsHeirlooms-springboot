@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.model.dto.CheckoutRequestDto;
 import com.example.demo.model.dto.TransactionDto;
+import com.example.demo.model.dto.checkout.CheckoutRequestDto;
 import com.example.demo.model.dto.users.UserCert;
 import com.example.demo.response.ApiResponse;
 import com.example.demo.service.TransactionService;
