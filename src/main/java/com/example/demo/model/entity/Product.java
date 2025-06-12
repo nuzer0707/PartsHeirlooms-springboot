@@ -3,7 +3,9 @@ package com.example.demo.model.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -67,5 +69,16 @@ public class Product {
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
+	
+	
+	 @OneToMany(
+       mappedBy = "product", // "product" 是 CartItem Entity 中 Product 型別的屬性名
+       cascade = CascadeType.ALL,
+       orphanRemoval = true,
+       fetch = FetchType.LAZY
+   )
+   @ToString.Exclude
+   @Builder.Default
+   private Set<CartItem> cartItems = new HashSet<>();
 	
 }
