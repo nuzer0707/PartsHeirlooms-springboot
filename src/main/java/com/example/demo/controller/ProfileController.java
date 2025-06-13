@@ -162,12 +162,12 @@ public class ProfileController {
 	}
 
 	@DeleteMapping("/favorites/{productId}")
-	public ResponseEntity<ApiResponse<Void>> removeFavorite(@PathVariable Integer ProductId, HttpSession session) {
+	public ResponseEntity<ApiResponse<Void>> removeFavorite(@PathVariable Integer productId, HttpSession session) {
 		UserCert userCert = (UserCert) session.getAttribute("userCert");
 
 		if (userCert == null)
 			return unauthorizedResponse("請先登入以移除收藏");
-		favoriteService.removeFavorite(userCert.getUserId(), ProductId);
+		favoriteService.removeFavorite(userCert.getUserId(), productId);
 
 		return ResponseEntity.ok(ApiResponse.success("商品已從收藏移除", null));
 
