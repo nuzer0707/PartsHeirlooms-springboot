@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.exception.CategoryNotFoundException;
 import com.example.demo.exception.ProductNotFoundException;
+import com.example.demo.model.dto.RatingDto;
 import com.example.demo.model.dto.products.ProductDto;
 import com.example.demo.model.dto.products.ProductSummaryDto;
 import com.example.demo.response.ApiResponse;
 import com.example.demo.service.ProductService;
+import com.example.demo.service.RatingService;
 
 @RestController
 @RequestMapping(value = {"/products"})
@@ -29,6 +31,8 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 	
+	@Autowired
+	private RatingService ratingService;
 	
 	// 無登入使用者 / 買家 可見 (公開列表)
 	@GetMapping
@@ -97,7 +101,23 @@ public class ProductController {
     }
 	
 	
-	
+    @GetMapping("/{productId}/ratings")
+    public ResponseEntity<ApiResponse<List<RatingDto>>> getRatingsForProductSeller(@PathVariable Integer productId) {
+        try {
+            // 我們需要一個新的 Service 方法來實現這個邏輯
+            List<RatingDto> ratings = ratingService.getRatingsForProductSeller(productId);
+
+            if (ratings.isEmpty()) {
+                return ResponseEntity.ok(ApiResponse.success("該賣家目前尚無任何評價", ratings));
+            }
+            return ResponseEntity.ok(ApiResponse.success("查詢賣家評價成功", ratings));
+
+        } catch (ProductNotFoundException e) {
+            // 如果商品 ID 不存在，返回 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+        }
+    }
 	
 	
 	

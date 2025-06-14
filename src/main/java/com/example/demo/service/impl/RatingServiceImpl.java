@@ -16,10 +16,12 @@ import com.example.demo.exception.AccessDeniedException;
 import com.example.demo.mapper.RatingMapper;
 import com.example.demo.model.dto.RatingDto;
 import com.example.demo.model.dto.RatingSubmitDto;
+import com.example.demo.model.entity.Product;
 import com.example.demo.model.entity.Rating;
 import com.example.demo.model.entity.Transaction;
 import com.example.demo.model.entity.User;
 import com.example.demo.model.entity.enums.UserRole;
+import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.RatingRepository;
 import com.example.demo.repository.TransactionRepository;
 import com.example.demo.repository.UserRepository;
@@ -36,6 +38,10 @@ public class RatingServiceImpl implements RatingService{
 	
 	@Autowired
 	private TransactionRepository transactionRepository;
+	
+	@Autowired
+	private ProductRepository productRepository;
+	
 	
 	@Autowired
 	private RatingMapper ratingMapper;
@@ -132,6 +138,26 @@ public class RatingServiceImpl implements RatingService{
 	public boolean hasUserRatedTransaction(Integer transactionId, Integer raterUserId) {
 		return ratingRepository
 				.existsByTransaction_TransactionIdAndRaterUserId_UserId(transactionId, raterUserId);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<RatingDto> getRatingsForProductSeller(Integer productId) throws ProductNotFoundException {
+		// 1. 驗證商品是否存在，同時獲取商品實體
+		Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("找不到商品 ID：" + productId));
+		// 2. 從商品實體中獲取賣家的 ID
+		Integer sellerId = product.getSellerUser().getUserId();
+		
+		 // 3. 呼叫現有的 getRatingsByRatedUser 方法來獲取評價
+        // 這樣可以重用邏輯，非常高效！
+        try {
+            return getRatingsByRatedUser(sellerId);
+        } catch (UserNotFoundException e) {
+            // 理論上這不應該發生，因為能刊登商品的賣家一定存在於 users 表中
+            // 但作為防禦性程式設計，我們處理這種邊界情況
+            throw new ProductOperationException("查詢評價失敗：找不到與商品關聯的賣家資訊。");
+        }
 	}
 
 }
