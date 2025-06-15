@@ -103,7 +103,7 @@ public class MessageServiceImpl implements MessageService {
 		boolean isByer = transaction.getBuyerUser().getUserId().equals(requestingUserId);
 		boolean isSeller = transaction.getSellerUser().getUserId().equals(requestingUserId);
 
-		if (!isByer && isSeller) {
+		if (!isByer && !isSeller) {
 			throw new AccessDeniedException("您無權查看此交易的對話記錄");
 		}
 

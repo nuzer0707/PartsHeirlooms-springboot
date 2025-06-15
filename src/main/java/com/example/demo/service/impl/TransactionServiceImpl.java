@@ -204,99 +204,109 @@ public class TransactionServiceImpl implements TransactionService {
 	public List<TransactionDto> createTransactionsFromCart(Integer userId, CheckoutRequestDto checkoutRequest)
 			throws UserNotFoundException {
 		List<CheckoutItemDto> checkoutItems = checkoutRequest.getItems();
+        if (checkoutItems == null || checkoutItems.isEmpty()) {
+            throw new ProductOperationException("結帳項目不能為空，無法建立交易");
+        }
 
-		if (checkoutItems.isEmpty()) {
-			throw new ProductOperationException("結帳項目不能為空，無法建立交易");
-		}
-		// 檢查是否需要運送資訊
-		boolean requiresShipping = checkoutItems.stream()
-				.anyMatch(item -> item.getChosenTransactionMethodId().equals(TransactionMethod.ID_SHIPPING));
+        // 1. 前置檢查：檢查是否需要運送資訊，如果需要但未提供，則提前拋出例外
+        boolean requiresShipping = checkoutItems.stream()
+                .anyMatch(item -> TransactionMethod.ID_SHIPPING.equals(item.getChosenTransactionMethodId()));
+        if (requiresShipping && checkoutRequest.getShippingInfo() == null) {
+            throw new IllegalArgumentException("選擇物流運送時，必須提供運送資訊");
+        }
 
-		if (requiresShipping && checkoutRequest.getShippingInfo() == null) {
-			throw new IllegalArgumentException("選擇物流運送時，必須提供運送資訊");
-		}
+        User buyer = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("找不到使用者 ID: " + userId));
 
-		User buyer = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("找不到使用者 ID: " + userId));
+        List<Transaction> createdTransactions = new ArrayList<>();
 
-		List<Transaction> newTransactions = new ArrayList<>();
+        // 2. 遍歷每一個要結帳的商品
+        for (CheckoutItemDto checkoutItem : checkoutItems) {
+            
+            // 從購物車中找到對應的項目，確保請求合法性並獲取商品實體
+            CartItem cartItem = cartItemRepository.findByUser_UserIdAndProduct_ProductId(userId, checkoutItem.getProductId())
+                    .orElseThrow(() -> new ProductOperationException("非法請求：購物車中找不到商品 ID: " + checkoutItem.getProductId()));
 
-		for (CheckoutItemDto checkoutItem : checkoutItems) {
-			CartItem cartItem = cartItemRepository
-					.findByUser_UserIdAndProduct_ProductId(userId, checkoutItem.getProductId()).orElseThrow(
-							() -> new ProductOperationException("非法請求：購物車中找不到商品 ID: " + checkoutItem.getProductId()));
+            Product product = cartItem.getProduct();
+            int quantityToBuy = cartItem.getQuantity();
 
-			Product product = cartItem.getProduct();
-			int quantityToBuy = cartItem.getQuantity();
-
-			if (product.getQuantity() < quantityToBuy) {
-				throw new ProductOperationException("商品 '" + product.getProductContent().getTitle() + "' 庫存不足，訂單已取消");
-			}
-
-			product.setQuantity(product.getQuantity() - quantityToBuy);
-			if (product.getQuantity() == 0) {
-				product.setStatus(ProductStatus.Sold);
-			}
-			productRepository.save(product);
-
-			// ==================== ▼▼▼ 新增的關鍵程式碼 ▼▼▼ ====================
-			// 根據買家選擇的 transactionMethodId，找到對應的 ProductTransactionDetail
-			ProductTransactionDetail chosenDetail = product.getTransactionDetails().stream()
-					.filter(detail -> detail.getTransactionMethod().getMethodId()
-							.equals(checkoutItem.getChosenTransactionMethodId()))
-					.findFirst()
-					.orElseThrow(() -> new ProductOperationException("商品 '" + product.getProductContent().getTitle()
-							+ "' 不支援所選的交易方式 ID: " + checkoutItem.getChosenTransactionMethodId()));
-			// ==================== ▲▲▲ 新增的關鍵程式碼 ▲▲▲ ====================
-
-			Transaction newTransaction = new Transaction();
-			newTransaction.setBuyerUser(buyer);
-			newTransaction.setSellerUser(product.getSellerUser());
-			newTransaction.setProductId(product);
-			newTransaction.setFinalPrice(product.getPrice().multiply(BigDecimal.valueOf(quantityToBuy)));
-			newTransaction.setChosenTransactionDetail(chosenDetail);
-			newTransaction.setStatus(TransactionStatus.Paid);
-
-			TransactionShipmentDetail shipmentDetail = new TransactionShipmentDetail();
-	
-			TransactionMethod chosenMethod = chosenDetail.getTransactionMethod(); // 直接從找到的 detail 中獲取
-			
-            shipmentDetail.setMethodName(chosenMethod.getName());
-
-         // 2. 根據不同的交易方式，設定不同的運送/交易細節
-            if (chosenMethod.getMethodId().equals(TransactionMethod.ID_SHIPPING)) {
-                // 處理【物流】的情況
-                ShippingInfoDto shippingInfo = checkoutRequest.getShippingInfo();
-                // 在方法開頭已經檢查過 shippingInfo 是否為 null，這裡可以省略
-                // if (shippingInfo == null) { ... }
-                shipmentDetail.setAddress(shippingInfo.getAddress());
-                // 物流可以有備註，例如來自賣家設定的 generalNotes
-                shipmentDetail.setNotes(chosenDetail.getGeneralNotes());
-
-            } else if (chosenMethod.getMethodId().equals(TransactionMethod.ID_MEETUP)) {
-                // 處理【面交】的情況
-                // 將賣家設定的面交資訊複製一份到這次交易的快照中
-                shipmentDetail.setMeetupTime(chosenDetail.getMeetupTime());
-                shipmentDetail.setNotes(chosenDetail.getGeneralNotes());
-                // 面交沒有 address，所以 address 欄位會是 null，這是正確的
+            // 3. 檢查庫存並更新
+            if (product.getQuantity() < quantityToBuy) {
+                // 如果任何一個商品庫存不足，整個交易失敗（所有資料庫操作都會回滾）
+                throw new ProductOperationException("商品 '" + product.getProductContent().getTitle() + "' 庫存不足，訂單已取消");
             }
+            product.setQuantity(product.getQuantity() - quantityToBuy);
+            if (product.getQuantity() == 0) {
+                product.setStatus(ProductStatus.Sold);
+            }
+            // 此處的 save 會由 JPA 的 Dirty Checking 機制在交易結束時自動處理，也可以手動 save
+            productRepository.save(product);
 
-			newTransaction.setShipmentDetail(shipmentDetail);
-			shipmentDetail.setTransaction(newTransaction);
 
-			newTransactions.add(transactionRepository.save(newTransaction));
-		}
-		
-		
-		 // ... (從購物車移除商品 和 返回 DTO 的邏輯保持不變) ...
+            // 4. 根據買家選擇，找到對應的 ProductTransactionDetail
+            ProductTransactionDetail chosenDetail = product.getTransactionDetails().stream()
+                    .filter(detail -> detail.getTransactionMethod().getMethodId().equals(checkoutItem.getChosenTransactionMethodId()))
+                    .findFirst()
+                    .orElseThrow(() -> new ProductOperationException("商品 '" + product.getProductContent().getTitle() 
+                                    + "' 不支援所選的交易方式 ID: " + checkoutItem.getChosenTransactionMethodId()));
 
-		List<Integer> productIdsToRemove = checkoutItems.stream().map(CheckoutItemDto::getProductId)
-				.collect(Collectors.toList());
-		List<CartItem> itemsToRemove = cartItemRepository.findByUser_UserIdAndProduct_ProductIdIn(userId,
-				productIdsToRemove);
-		cartItemRepository.deleteAll(itemsToRemove);
+            
+            // 5. 建立 Transaction 主體
+            Transaction newTransaction = new Transaction();
+            newTransaction.setBuyerUser(buyer);
+            newTransaction.setSellerUser(product.getSellerUser());
+            newTransaction.setProductId(product);
+            newTransaction.setFinalPrice(product.getPrice().multiply(BigDecimal.valueOf(quantityToBuy)));
+            newTransaction.setChosenTransactionDetail(chosenDetail);
+            newTransaction.setStatus(TransactionStatus.Paid); // 假設結帳後即為「已付款」狀態
 
-		return newTransactions.stream().map(transactionMapper::toDto).collect(Collectors.toList());
+            // 6. 建立 TransactionShipmentDetail (交易運送資訊快照)
+            TransactionShipmentDetail shipmentDetail = createShipmentDetail(chosenDetail, checkoutRequest.getShippingInfo());
+            newTransaction.setShipmentDetail(shipmentDetail);
+            shipmentDetail.setTransaction(newTransaction); // 建立雙向關聯
+
+            // 7. 儲存交易，JPA 會一併儲存關聯的 shipmentDetail
+            createdTransactions.add(transactionRepository.save(newTransaction));
+        }
+
+        // 8. 從購物車中移除已結帳的商品
+        List<Integer> productIdsToRemove = checkoutItems.stream()
+                .map(CheckoutItemDto::getProductId)
+                .collect(Collectors.toList());
+        cartItemRepository.deleteByUser_UserIdAndProduct_ProductIdIn(userId, productIdsToRemove); // 假設有這個 Repository 方法
+
+        // 9. 將所有成功建立的 Transaction 轉換為 DTO 並返回
+        return createdTransactions.stream()
+                .map(transactionMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 輔助方法：根據賣家設定的交易細節和買家填寫的運送資訊，建立一個交易運送快照。
+     * @param chosenDetail 賣家設定的、被買家選中的交易方式細節
+     * @param shippingInfo 買家填寫的運送資訊 (可能為 null)
+     * @return 一個新的 TransactionShipmentDetail 物件
+     */
+    private TransactionShipmentDetail createShipmentDetail(ProductTransactionDetail chosenDetail, ShippingInfoDto shippingInfo) {
+        TransactionShipmentDetail shipmentDetail = new TransactionShipmentDetail();
+        TransactionMethod chosenMethod = chosenDetail.getTransactionMethod();
+        
+        shipmentDetail.setMethodName(chosenMethod.getName());
+
+        if (TransactionMethod.ID_SHIPPING.equals(chosenMethod.getMethodId())) {
+            // 處理【物流】的情況
+            // 在主方法中已檢查過 shippingInfo 在此情況下不為 null
+            shipmentDetail.setAddress(shippingInfo.getAddress());
+            shipmentDetail.setNotes(chosenDetail.getGeneralNotes()); // 複製賣家的備註
+
+        } else if (TransactionMethod.ID_MEETUP.equals(chosenMethod.getMethodId())) {
+            // 處理【面交】的情況
+            shipmentDetail.setMeetupTime(chosenDetail.getMeetupTime());
+            shipmentDetail.setNotes(chosenDetail.getGeneralNotes()); // 複製賣家的備註
+            // 面交的 address 欄位保持 null
+        }
+        
+        return shipmentDetail;
 	}
 
 }
