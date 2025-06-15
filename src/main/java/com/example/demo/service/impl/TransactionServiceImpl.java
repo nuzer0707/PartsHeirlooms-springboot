@@ -51,16 +51,15 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Autowired
 	private ProductTransactionDetailRepository productTransactionDetailRepository;
-	
+
 	@Autowired
 	private CartItemRepository cartItemRepository;
-	
+
 	@Autowired
 	private TransactionMapper transactionMapper;
-	
+
 	@Autowired
 	private TransactionMethodRepository transactionMethodRepository;
-	
 
 	@Override
 	@Transactional
@@ -89,8 +88,7 @@ public class TransactionServiceImpl implements TransactionService {
 		Transaction transaction = Transaction.builder().productId(product).buyerUser(buyer)
 				.sellerUser(product.getSellerUser()).chosenTransactionDetail(productTransactionDetail)
 				.finalPrice(product.getPrice()).build();
-		
-		
+
 		productRepository.save(product);
 
 		Transaction savaedTransaction = transactionRepository.save(transaction);
@@ -180,98 +178,125 @@ public class TransactionServiceImpl implements TransactionService {
 	@Transactional
 	public TransactionDto buyerCancelTransaction(Integer transactionId, Integer buyerUserId)
 			throws UserNotFoundException {
-		Transaction transaction = transactionRepository.findByTransactionIdAndBuyerUserUserId(transactionId, buyerUserId)
+		Transaction transaction = transactionRepository
+				.findByTransactionIdAndBuyerUserUserId(transactionId, buyerUserId)
 				.orElseThrow(() -> new ProductNotFoundException("找不到屬於您的交易 ID: " + transactionId + " 或您無權操作"));
 		if (transaction.getStatus() != TransactionStatus.Pending_Payment
 				&& transaction.getStatus() != TransactionStatus.Paid) {
 			throw new ProductOperationException("訂單狀態為 " + transaction.getStatus() + "，無法取消");
 		}
 		transaction.setStatus(TransactionStatus.Cancelled);
-    // 恢復產品庫存
+		// 恢復產品庫存
 		Product product = transaction.getProductId();
-		product.setQuantity(product.getQuantity()+1); // 假設一次交易一個單位
+		product.setQuantity(product.getQuantity() + 1); // 假設一次交易一個單位
 		// 如果產品之前因為庫存為0而被標記為 Sold，現在可以改回 For_Sale (如果業務允許)
-		//if(product.getStatus()== ProductStatus.Sold && product.getQuantity()>0) {
-		//  product.setStatus(ProductStatus.For_Sale);	
-		//}
+		// if(product.getStatus()== ProductStatus.Sold && product.getQuantity()>0) {
+		// product.setStatus(ProductStatus.For_Sale);
+		// }
 		productRepository.save(product);
 		Transaction cancelledTransaction = transactionRepository.save(transaction);
 		return transactionMapper.toDto(cancelledTransaction);
-	
+
 	}
 
 	@Override
-	public List<TransactionDto> createTransactionsFromCart(Integer userId, CheckoutRequestDto checkoutRequest) throws UserNotFoundException {
-		 List<CheckoutItemDto> checkoutItems = checkoutRequest.getItems();
-		 
-		 if (checkoutItems.isEmpty()) {
-	            throw new ProductOperationException("結帳項目不能為空，無法建立交易");
-	        }
-		 // 檢查是否需要運送資訊
-		 boolean requiresShipping = checkoutItems.stream()
-	                .anyMatch(item -> item.getChosenTransactionMethodId().equals(TransactionMethod.ID_SHIPPING));
-		 
-		 if (requiresShipping && checkoutRequest.getShippingInfo() == null) {
-	            throw new IllegalArgumentException("選擇物流運送時，必須提供運送資訊");
-	        }
-		 
-		 User buyer = userRepository.findById(userId)
-	                .orElseThrow(() -> new UserNotFoundException("找不到使用者 ID: " + userId));
-		 
-		 List<Transaction> newTransactions = new ArrayList<>();
-		 
-		 
-		 
-		 for (CheckoutItemDto checkoutItem : checkoutItems) {
-	            CartItem cartItem = cartItemRepository.findByUser_UserIdAndProduct_ProductId(userId, checkoutItem.getProductId())
-	                    .orElseThrow(() -> new ProductOperationException("非法請求：購物車中找不到商品 ID: " + checkoutItem.getProductId()));
-	            
-	            Product product = cartItem.getProduct();
-	            int quantityToBuy = cartItem.getQuantity();
+	@Transactional
+	public List<TransactionDto> createTransactionsFromCart(Integer userId, CheckoutRequestDto checkoutRequest)
+			throws UserNotFoundException {
+		List<CheckoutItemDto> checkoutItems = checkoutRequest.getItems();
 
-	            if (product.getQuantity() < quantityToBuy) {
-	                throw new ProductOperationException("商品 '" + product.getProductContent().getTitle() + "' 庫存不足，訂單已取消");
-	            }
-	            
-	            product.setQuantity(product.getQuantity() - quantityToBuy);
-	            if (product.getQuantity() == 0) {
-	                product.setStatus(ProductStatus.Sold);
-	            }
-	            productRepository.save(product);
+		if (checkoutItems.isEmpty()) {
+			throw new ProductOperationException("結帳項目不能為空，無法建立交易");
+		}
+		// 檢查是否需要運送資訊
+		boolean requiresShipping = checkoutItems.stream()
+				.anyMatch(item -> item.getChosenTransactionMethodId().equals(TransactionMethod.ID_SHIPPING));
 
-	            Transaction newTransaction = new Transaction();
-	            newTransaction.setBuyerUser(buyer);
-	            newTransaction.setSellerUser(product.getSellerUser());
-	            newTransaction.setProductId(product);
-	            newTransaction.setFinalPrice(product.getPrice().multiply(BigDecimal.valueOf(quantityToBuy)));
-	            newTransaction.setStatus(TransactionStatus.Paid);
+		if (requiresShipping && checkoutRequest.getShippingInfo() == null) {
+			throw new IllegalArgumentException("選擇物流運送時，必須提供運送資訊");
+		}
 
-	            TransactionShipmentDetail shipmentDetail = new TransactionShipmentDetail();
-	            
-	            TransactionMethod chosenMethod = transactionMethodRepository.findById(checkoutItem.getChosenTransactionMethodId())
-	                    .orElseThrow(() -> new ProductOperationException("無效的交易方式 ID: " + checkoutItem.getChosenTransactionMethodId()));
-	            shipmentDetail.setMethodName(chosenMethod.getName());
+		User buyer = userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundException("找不到使用者 ID: " + userId));
 
-	            if (chosenMethod.getMethodId().equals(TransactionMethod.ID_SHIPPING)) {
-	                ShippingInfoDto shippingInfo = checkoutRequest.getShippingInfo();
-	                shipmentDetail.setAddress(shippingInfo.getAddress());
-	            }
+		List<Transaction> newTransactions = new ArrayList<>();
 
-	            newTransaction.setShipmentDetail(shipmentDetail);
-	            shipmentDetail.setTransaction(newTransaction);
-	            
-	            newTransactions.add(transactionRepository.save(newTransaction));
-	        }
+		for (CheckoutItemDto checkoutItem : checkoutItems) {
+			CartItem cartItem = cartItemRepository
+					.findByUser_UserIdAndProduct_ProductId(userId, checkoutItem.getProductId()).orElseThrow(
+							() -> new ProductOperationException("非法請求：購物車中找不到商品 ID: " + checkoutItem.getProductId()));
 
-	        List<Integer> productIdsToRemove = checkoutItems.stream().map(CheckoutItemDto::getProductId).collect(Collectors.toList());
-	        List<CartItem> itemsToRemove = cartItemRepository.findByUser_UserIdAndProduct_ProductIdIn(userId, productIdsToRemove);
-	        cartItemRepository.deleteAll(itemsToRemove);
+			Product product = cartItem.getProduct();
+			int quantityToBuy = cartItem.getQuantity();
 
-	        return newTransactions.stream()
-	                .map(transactionMapper::toDto)
-	                .collect(Collectors.toList());
-	}
+			if (product.getQuantity() < quantityToBuy) {
+				throw new ProductOperationException("商品 '" + product.getProductContent().getTitle() + "' 庫存不足，訂單已取消");
+			}
 
+			product.setQuantity(product.getQuantity() - quantityToBuy);
+			if (product.getQuantity() == 0) {
+				product.setStatus(ProductStatus.Sold);
+			}
+			productRepository.save(product);
+
+			// ==================== ▼▼▼ 新增的關鍵程式碼 ▼▼▼ ====================
+			// 根據買家選擇的 transactionMethodId，找到對應的 ProductTransactionDetail
+			ProductTransactionDetail chosenDetail = product.getTransactionDetails().stream()
+					.filter(detail -> detail.getTransactionMethod().getMethodId()
+							.equals(checkoutItem.getChosenTransactionMethodId()))
+					.findFirst()
+					.orElseThrow(() -> new ProductOperationException("商品 '" + product.getProductContent().getTitle()
+							+ "' 不支援所選的交易方式 ID: " + checkoutItem.getChosenTransactionMethodId()));
+			// ==================== ▲▲▲ 新增的關鍵程式碼 ▲▲▲ ====================
+
+			Transaction newTransaction = new Transaction();
+			newTransaction.setBuyerUser(buyer);
+			newTransaction.setSellerUser(product.getSellerUser());
+			newTransaction.setProductId(product);
+			newTransaction.setFinalPrice(product.getPrice().multiply(BigDecimal.valueOf(quantityToBuy)));
+			newTransaction.setChosenTransactionDetail(chosenDetail);
+			newTransaction.setStatus(TransactionStatus.Paid);
+
+			TransactionShipmentDetail shipmentDetail = new TransactionShipmentDetail();
 	
+			TransactionMethod chosenMethod = chosenDetail.getTransactionMethod(); // 直接從找到的 detail 中獲取
+			
+            shipmentDetail.setMethodName(chosenMethod.getName());
+
+         // 2. 根據不同的交易方式，設定不同的運送/交易細節
+            if (chosenMethod.getMethodId().equals(TransactionMethod.ID_SHIPPING)) {
+                // 處理【物流】的情況
+                ShippingInfoDto shippingInfo = checkoutRequest.getShippingInfo();
+                // 在方法開頭已經檢查過 shippingInfo 是否為 null，這裡可以省略
+                // if (shippingInfo == null) { ... }
+                shipmentDetail.setAddress(shippingInfo.getAddress());
+                // 物流可以有備註，例如來自賣家設定的 generalNotes
+                shipmentDetail.setNotes(chosenDetail.getGeneralNotes());
+
+            } else if (chosenMethod.getMethodId().equals(TransactionMethod.ID_MEETUP)) {
+                // 處理【面交】的情況
+                // 將賣家設定的面交資訊複製一份到這次交易的快照中
+                shipmentDetail.setMeetupTime(chosenDetail.getMeetupTime());
+                shipmentDetail.setNotes(chosenDetail.getGeneralNotes());
+                // 面交沒有 address，所以 address 欄位會是 null，這是正確的
+            }
+
+			newTransaction.setShipmentDetail(shipmentDetail);
+			shipmentDetail.setTransaction(newTransaction);
+
+			newTransactions.add(transactionRepository.save(newTransaction));
+		}
+		
+		
+		 // ... (從購物車移除商品 和 返回 DTO 的邏輯保持不變) ...
+
+		List<Integer> productIdsToRemove = checkoutItems.stream().map(CheckoutItemDto::getProductId)
+				.collect(Collectors.toList());
+		List<CartItem> itemsToRemove = cartItemRepository.findByUser_UserIdAndProduct_ProductIdIn(userId,
+				productIdsToRemove);
+		cartItemRepository.deleteAll(itemsToRemove);
+
+		return newTransactions.stream().map(transactionMapper::toDto).collect(Collectors.toList());
+	}
 
 }
