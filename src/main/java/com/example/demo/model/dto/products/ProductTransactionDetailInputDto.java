@@ -22,7 +22,7 @@ public class ProductTransactionDetailInputDto {
 	private LocalDateTime meetupTime;// 面交時間
 	
 	@Size(max = 255,message = "一般備註長度不能超過 255 個字元")
-	private String generaNotes;
+	private String generalNotes;
 	
 	//緯度驗證範圍：-90 到 90
 	

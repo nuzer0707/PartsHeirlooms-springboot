@@ -40,9 +40,7 @@ public class Transaction {
   @JoinColumn(name = "buyer_user_id", nullable = false)
   private User buyerUser;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "chosen_transaction_detail_id", nullable = false)
-  private ProductTransactionDetail chosenTransactionDetail;
+
 
   @Column(name = "final_price", nullable = false, precision = 10, scale = 2)
   private BigDecimal finalPrice;

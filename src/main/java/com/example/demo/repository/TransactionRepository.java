@@ -45,4 +45,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 	@Query("SELECT t FROM Transaction t WHERE t.sellerUser.userId = :sellerId AND t.status IN :statuses ORDER BY t.createdAt DESC")
 	List<Transaction> findBySellerUserUserIdAndStatusInOrderByCreatedAtDesc(@Param("sellerId") Integer sellerId, @Param("statuses") List<TransactionStatus> statuses);
 
+	
+	
+	boolean existsByProductId_ProductId(Integer productId);
+	
+	
+	 boolean existsByProductId_ProductIdAndStatusIn(Integer productId, List<TransactionStatus> statuses);
 }

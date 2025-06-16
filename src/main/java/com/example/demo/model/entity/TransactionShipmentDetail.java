@@ -1,5 +1,6 @@
 package com.example.demo.model.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
@@ -20,6 +21,9 @@ public class TransactionShipmentDetail {
     @JoinColumn(name = "transaction_id", nullable = false, unique = true)
     private Transaction transaction;
 
+	
+//--- 以下是快照資訊 ---
+	
 	@Column(name = "method_name", nullable = false, length = 50)
     private String methodName;
 
@@ -32,5 +36,11 @@ public class TransactionShipmentDetail {
 	@Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
+  @Column(name = "meetup_latitude", precision = 10, scale = 8)
+  private BigDecimal meetupLatitude;
+
+  @Column(name = "meetup_longitude", precision = 11, scale = 8)
+  private BigDecimal meetupLongitude;
+	
 	
 }

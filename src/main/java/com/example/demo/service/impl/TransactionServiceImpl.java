@@ -181,14 +181,21 @@ public class TransactionServiceImpl implements TransactionService {
 		Transaction transaction = transactionRepository
 				.findByTransactionIdAndBuyerUserUserId(transactionId, buyerUserId)
 				.orElseThrow(() -> new ProductNotFoundException("找不到屬於您的交易 ID: " + transactionId + " 或您無權操作"));
+	// 檢查是否處於可取消的狀態 (例如，已付款但尚未出貨)
 		if (transaction.getStatus() != TransactionStatus.Pending_Payment
 				&& transaction.getStatus() != TransactionStatus.Paid) {
 			throw new ProductOperationException("訂單狀態為 " + transaction.getStatus() + "，無法取消");
 		}
+	// 1. 更新交易狀態為「已取消」
 		transaction.setStatus(TransactionStatus.Cancelled);
 		// 恢復產品庫存
 		Product product = transaction.getProductId();
 		product.setQuantity(product.getQuantity() + 1); // 假設一次交易一個單位
+    // 如果商品之前因為這筆訂單而被標記為 Sold，現在應該將其恢復為 For_Sale
+    // 這樣商品才能被重新上架銷售
+    if (product.getStatus() == ProductStatus.Sold) {
+        product.setStatus(ProductStatus.For_Sale);
+    }
 		// 如果產品之前因為庫存為0而被標記為 Sold，現在可以改回 For_Sale (如果業務允許)
 		// if(product.getStatus()== ProductStatus.Sold && product.getQuantity()>0) {
 		// product.setStatus(ProductStatus.For_Sale);
@@ -292,17 +299,22 @@ public class TransactionServiceImpl implements TransactionService {
         TransactionMethod chosenMethod = chosenDetail.getTransactionMethod();
         
         shipmentDetail.setMethodName(chosenMethod.getName());
+        shipmentDetail.setNotes(chosenDetail.getGeneralNotes()); 
 
         if (TransactionMethod.ID_SHIPPING.equals(chosenMethod.getMethodId())) {
             // 處理【物流】的情況
             // 在主方法中已檢查過 shippingInfo 在此情況下不為 null
             shipmentDetail.setAddress(shippingInfo.getAddress());
             shipmentDetail.setNotes(chosenDetail.getGeneralNotes()); // 複製賣家的備註
-
+            
+            
         } else if (TransactionMethod.ID_MEETUP.equals(chosenMethod.getMethodId())) {
             // 處理【面交】的情況
             shipmentDetail.setMeetupTime(chosenDetail.getMeetupTime());
             shipmentDetail.setNotes(chosenDetail.getGeneralNotes()); // 複製賣家的備註
+            shipmentDetail.setMeetupLatitude(chosenDetail.getMeetupLatitude());
+            shipmentDetail.setMeetupLongitude(chosenDetail.getMeetupLongitude());
+            
             // 面交的 address 欄位保持 null
         }
         

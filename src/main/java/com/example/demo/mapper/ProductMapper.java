@@ -29,6 +29,7 @@ public class ProductMapper {
 
 	@Autowired
 	private ModelMapper modelMapper;
+
 	@Autowired
 	private TransactionMethodRepository transactionMethodRepository;
 
@@ -37,72 +38,58 @@ public class ProductMapper {
 		if (product == null) {
 			return null;
 		}
-
 		ProductDto dto = modelMapper.map(product, ProductDto.class);
-
 		if (product.getSellerUser() != null) {
 			dto.setSellerUserId(product.getSellerUser().getUserId());
 			dto.setSellerUsername(product.getSellerUser().getUsername());
 		}
-
 		if (product.getCategory() != null) {
 			dto.setCategoryId(product.getCategory().getCategoryId());
 			dto.setCategoryName(product.getCategory().getCategoryName());
 		}
-		// 從 ProductContent 實體獲取內容
 		if (product.getProductContent() != null) {
 			dto.setTitle(product.getProductContent().getTitle());
 			dto.setShortDescription(product.getProductContent().getShortDescription());
 			dto.setFullDescription(product.getProductContent().getFullDescription());
 		}
-		// 從 ProductImage 實體獲取 Base64 字串
-		if (product.getProductImages() != null) {
+		if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {
 			dto.setImageBases64(
 					product.getProductImages().stream().map(ProductImage::getImageBase64).collect(Collectors.toList()));
 		} else {
-			dto.setImageBases64(Collections.emptyList()); // 避免 null
+			dto.setImageBases64(Collections.emptyList());
 		}
-		// 從 ProductTransactionDetail 實體獲取交易明細
 		if (product.getTransactionDetails() != null) {
 			dto.setTransactionDetails(product.getTransactionDetails().stream().map(this::toProductTransactionDetailDto)
 					.collect(Collectors.toList()));
 		} else {
-			dto.setTransactionDetails(Collections.emptyList()); // 避免 null
+			dto.setTransactionDetails(Collections.emptyList());
 		}
 		return dto;
 	}
 
 	// 將 Product 實體轉換為 ProductSummaryDto (用於列表頁，只包含預覽圖)
-
 	public ProductSummaryDto toSummaryDto(Product product) {
-
 		if (product == null) {
 			return null;
 		}
-		
 		ProductSummaryDto dto = modelMapper.map(product, ProductSummaryDto.class);
-
 		if (product.getSellerUser() != null) {
 			dto.setSellerUserId(product.getSellerUser().getUserId());
 			dto.setSellerUsername(product.getSellerUser().getUsername());
 		}
-
 		if (product.getCategory() != null) {
 			dto.setCategoryId(product.getCategory().getCategoryId());
 			dto.setCategoryName(product.getCategory().getCategoryName());
 		}
-		
 		if (product.getProductContent() != null) {
 			dto.setTitle(product.getProductContent().getTitle());
 			dto.setShortDescription(product.getProductContent().getShortDescription());
 		}
-		// 只設定第一張圖片的 Base64 字串作為預覽
-		if (product.getProductImages() != null) {
+		if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {
 			dto.setFirstBase64Image(product.getProductImages().get(0).getImageBase64());
 		} else {
-			dto.setFirstBase64Image(null);// 或者一個預設的 Base64 佔位圖
+			dto.setFirstBase64Image(null);
 		}
-
 		return dto;
 	}
 
@@ -128,119 +115,88 @@ public class ProductMapper {
 		product.setQuantity(dto.getQuantity());
 		product.setStatus(ProductStatus.For_Sale);
 		
-		// 狀態在 Product 實體的 @PrePersist 中預設為 'For_Sale'
-
-		// 產品內容
 		ProductContent content = modelMapper.map(dto.getContent(), ProductContent.class);
-		content.setProduct(product); // 建立雙向關聯
-		product.setProductContent(content);// 設定 Product 的 productContent
+		content.setProduct(product);
+		product.setProductContent(content);
 
 		if (dto.getImages() != null) {
-			for (ProductImageDto imageDto : dto.getImages()) {
+			dto.getImages().forEach(imageDto -> {
 				ProductImage img = new ProductImage();
-				img.setImageBase64(imageDto.getImageBase64()); // 設定 Base64 字串
-				img.setProduct(product);// 建立雙向關聯
+				img.setImageBase64(imageDto.getImageBase64());
+				img.setProduct(product);
 				product.getProductImages().add(img);
-			}
+			});
 		}
 
-		// 產品交易明細
 		if (dto.getTransactionDetails() != null) {
-			 for (ProductTransactionDetailInputDto detailDto : dto.getTransactionDetails()) {
-         TransactionMethod method = transactionMethodRepository.findById(detailDto.getMethodId())
-                 .orElseThrow(() -> new IllegalArgumentException("無效的交易方式 ID: " + detailDto.getMethodId()));
-
-         ProductTransactionDetail detail = new ProductTransactionDetail(); // 創建新的實體
-
-         // ---- 開始明確映射 ProductTransactionDetail 的字段 ----
-         // 假設 ProductTransactionDetailInputDto 有以下 getter 方法
-         // 並且 ProductTransactionDetail 實體有對應的 setter 方法
-         detail.setMeetupTime(detailDto.getMeetupTime());
-         detail.setMeetupLatitude(detailDto.getMeetupLatitude());
-         detail.setMeetupLongitude(detailDto.getMeetupLongitude());
-         detail.setGeneralNotes(detailDto.getGeneraNotes());
-         // 如果還有其他從 DTO 映射過來的字段，在這裡添加
-         // ---- 結束明確映射 ----
-
-         detail.setTransactionMethod(method); // 設置關聯的交易方式
-         detail.setProduct(product);          // 建立與 Product 的雙向關聯
-
-         // 如果 ProductTransactionDetail 也有 createdAt 且不由DB自動生成
-         // if (detail.getCreatedAt() == null) detail.setCreatedAt(java.time.Instant.now());
-
-         product.getTransactionDetails().add(detail); // 添加到 Product 的集合中
-			}
+			 dto.getTransactionDetails().forEach(detailDto -> {
+                 TransactionMethod method = transactionMethodRepository.findById(detailDto.getMethodId())
+                         .orElseThrow(() -> new IllegalArgumentException("無效的交易方式 ID: " + detailDto.getMethodId()));
+                 ProductTransactionDetail detail = new ProductTransactionDetail();
+                 detail.setMeetupTime(detailDto.getMeetupTime());
+                 detail.setMeetupLatitude(detailDto.getMeetupLatitude());
+                 detail.setMeetupLongitude(detailDto.getMeetupLongitude());
+                 detail.setGeneralNotes(detailDto.getGeneralNotes()); // 假設 DTO 中欄位名已修正
+                 detail.setTransactionMethod(method);
+                 detail.setProduct(product);
+                 product.getTransactionDetails().add(detail);
+			});
 		}
 		return product;
 	}
 
 	// 使用 ProductUpdateDto 更新現有的 Product 實體
 	public void updateEntityFromDto(Product product, ProductUpdateDto dto, Category category) {
-		// 更新基本欄位 (如果 DTO 中有提供)
-		if (dto.getPrice() != null)
-			product.setPrice(dto.getPrice());
-		if (dto.getQuantity() != null)
-			product.setQuantity(dto.getQuantity());
-		if (dto.getStatus() != null)
-			product.setStatus(dto.getStatus());
-		if (category != null)
-			product.setCategory(category);
-		// 如果 DTO 中有 categoryId 並且已獲取 category 實體
+		// --- 1. 更新可以安全修改的欄位 ---
+		if (dto.getPrice() != null) product.setPrice(dto.getPrice());
+		if (dto.getQuantity() != null) product.setQuantity(dto.getQuantity());
+		if (dto.getStatus() != null) product.setStatus(dto.getStatus());
+		if (category != null) product.setCategory(category);
 
-		// 更新產品內容
+		// --- 2. 更新產品內容 ---
 		if (dto.getContent() != null) {
 			ProductContent content = product.getProductContent();
-			// ProductContent 應該總是存在於一個格式正確的 Product 中 (因為 Product 的 optional=false)
-			if (content == null) {
+			if (content == null) { // 防禦性程式設計
 				content = new ProductContent();
 				content.setProduct(product);
 				product.setProductContent(content);
 			}
-			if (dto.getContent().getTitle() != null)
-				content.setTitle(dto.getContent().getTitle());
-
-			if (dto.getContent().getShortDescription() != null)
-				content.setShortDescription(dto.getContent().getShortDescription());
-
-			// 如果 DTO 中提供，完整描述可以設置為 null 或空字串
-			// 注意：這裡如果傳入 null 會清空 fullDescription
-
-			if (dto.getContent().getFullDescription() != null)
-				content.setFullDescription(dto.getContent().getFullDescription());
-
+			if (dto.getContent().getTitle() != null) content.setTitle(dto.getContent().getTitle());
+			if (dto.getContent().getShortDescription() != null) content.setShortDescription(dto.getContent().getShortDescription());
+			if (dto.getContent().getFullDescription() != null) content.setFullDescription(dto.getContent().getFullDescription());
 		}
-		// 更新產品圖片 (完全替換)
-		// 只有當前端明確提供 images 列表時才更新 (即使是空列表也代表清空)
 
+		// --- 3. 更新圖片 (完全替換) ---
 		if (dto.getImages() != null) {
 			product.getProductImages().clear();
-			for (ProductImageDto imageDto : dto.getImages()) {
+			dto.getImages().forEach(imageDto -> {
 				ProductImage img = new ProductImage();
 				img.setImageBase64(imageDto.getImageBase64());
 				img.setProduct(product);
 				product.getProductImages().add(img);
-			}
-
-			// 更新產品交易明細 (完全替換)
-			// 只有當前端明確提供 transactionDetails 列表時才更新 (即使是空列表也代表清空)
-
-			if (dto.getTransactionDetails() != null) {
-				product.getTransactionDetails().clear();
-				for (ProductTransactionDetailInputDto detailDto : dto.getTransactionDetails()) {
-					TransactionMethod method = transactionMethodRepository.findById(detailDto.getMethodId())
-							.orElseThrow(() -> new IllegalArgumentException("無效的交易方式 ID" + detailDto.getMethodId()));
-					ProductTransactionDetail detail = new ProductTransactionDetail();
-					modelMapper.map(detailDto, detail); // 將 DTO 的值映射到實體
-					detail.setTransactionMethod(method);
-					detail.setProduct(product);
-					product.getTransactionDetails().add(detail);
-
-				}
-
-			}
-
+			});
 		}
-
+			 
+		// --- 4. 更新交易明細 (完全替換) ---
+        // Mapper 只負責轉換，不進行業務判斷。業務判斷已在 Service 層完成。
+		if (dto.getTransactionDetails() != null) {
+			product.getTransactionDetails().clear();
+			dto.getTransactionDetails().forEach(detailDto -> {
+				TransactionMethod method = transactionMethodRepository.findById(detailDto.getMethodId())
+						.orElseThrow(() -> new IllegalArgumentException("無效的交易方式 ID: " + detailDto.getMethodId()));
+				
+				ProductTransactionDetail newDetail = new ProductTransactionDetail();
+				
+				newDetail.setGeneralNotes(detailDto.getGeneralNotes());
+				newDetail.setMeetupTime(detailDto.getMeetupTime());
+                newDetail.setMeetupLatitude(detailDto.getMeetupLatitude());
+                newDetail.setMeetupLongitude(detailDto.getMeetupLongitude());
+				
+				newDetail.setTransactionMethod(method);
+				newDetail.setProduct(product);          
+				
+				product.getTransactionDetails().add(newDetail); 
+			});
+		}
 	}
-
 }
