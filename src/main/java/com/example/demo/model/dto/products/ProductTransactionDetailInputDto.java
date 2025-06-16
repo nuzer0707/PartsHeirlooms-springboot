@@ -26,7 +26,7 @@ public class ProductTransactionDetailInputDto {
 	
 	//緯度驗證範圍：-90 到 90
 	
-	@Column(name = "meetup_latitude", precision = 10, scale = 8)
+	@Column(name = "meetup_latitude", precision = 11, scale = 8)
 	private BigDecimal meetupLatitude;
 	
 	// 經度驗證範圍：-180 到 180

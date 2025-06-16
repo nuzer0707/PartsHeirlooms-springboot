@@ -2,6 +2,8 @@ package com.example.demo.filter;
 
 import java.io.IOException;
 
+import org.springframework.stereotype.Component;
+
 import com.example.demo.model.dto.users.UserCert;
 import com.example.demo.model.entity.enums.UserRole;
 

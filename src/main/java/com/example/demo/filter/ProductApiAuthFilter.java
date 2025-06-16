@@ -2,6 +2,8 @@ package com.example.demo.filter;
 
 import java.io.IOException;
 
+import org.springframework.stereotype.Component;
+
 import com.example.demo.model.dto.users.UserCert;
 import com.example.demo.model.entity.enums.UserRole;
 
@@ -11,6 +13,7 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 
 @WebFilter(urlPatterns = {"/products/*"})
 public class ProductApiAuthFilter extends BaseAuthFilter {

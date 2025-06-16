@@ -40,10 +40,10 @@ public class ProductTransactionDetail {
 	@Column(name = "general_notes",length = 255)
 	private String generalNotes;
 	
-	@Column(name = "meetup_latitude",precision = 10,scale = 8)
+	@Column(name = "meetup_latitude",precision = 11,scale = 8)
 	private BigDecimal meetupLatitude;
 	
-	@Column(name = "meetup_longitude",precision = 10,scale = 8)
+	@Column(name = "meetup_longitude",precision = 11,scale = 8)
 	private BigDecimal meetupLongitude;
 	
 	

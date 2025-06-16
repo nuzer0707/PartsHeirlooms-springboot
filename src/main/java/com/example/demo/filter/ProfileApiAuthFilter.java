@@ -2,6 +2,8 @@ package com.example.demo.filter;
 
 import java.io.IOException;
 
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
@@ -10,6 +12,8 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+
 
 @WebFilter(urlPatterns = {"/profile/*"}) // <--- 修改於此，保護所有 /profile/ 下的路徑
 public class ProfileApiAuthFilter extends BaseAuthFilter{

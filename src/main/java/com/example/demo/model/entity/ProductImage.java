@@ -28,7 +28,7 @@ public class ProductImage {
 	private Product product;
 
   @Lob
-  @Column(name = "image_base64", nullable = false)
+  @Column(name = "image_base64", nullable = false,columnDefinition = "LONGTEXT")
   private String imageBase64;
   
 
