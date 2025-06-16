@@ -10,7 +10,7 @@ import com.example.demo.model.entity.enums.UserRole;
 
 public interface TransactionService {
 
-	TransactionDto addTransaction(Integer buyerId,Integer productId,Integer chosenTransactionDetailId) throws UserNotFoundException;
+	//TransactionDto addTransaction(Integer buyerId,Integer productId,Integer chosenTransactionDetailId) throws UserNotFoundException;
 	
 	TransactionDto getTransactionById(Integer transactionId,Integer requestingUserId ,UserRole userRole);
 	

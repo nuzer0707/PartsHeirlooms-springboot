@@ -174,6 +174,7 @@ public class ProductServiceImpl implements ProductService {
 			throw new AccessDeniedException("您無權修改此產品");
 		}
 		
+		
 		if(currentUserRole != UserRole.ADMIN && product.getSellerUser().getUserId().equals(currentUserId)) {
 			if(updateDto.getStatus()!=null &&
 			   updateDto.getStatus() != ProductStatus.For_Sale &&
@@ -186,24 +187,7 @@ public class ProductServiceImpl implements ProductService {
 			}
 		}
 
-        // 業務邏輯檢查：如果前端試圖修改交易方式，則檢查商品是否有活躍訂單
-		if (updateDto.getTransactionDetails() != null) {
-			// 1. 定義哪些是「活躍」的訂單狀態
-			List<TransactionStatus> activeStatuses = Arrays.asList(
-				TransactionStatus.Pending_Payment,
-				TransactionStatus.Paid,
-				TransactionStatus.Processing,
-				TransactionStatus.Shipped
-			);
-
-			// 2. 使用新的 repository 方法進行檢查
-			boolean hasActiveTransactions = transactionRepository.existsByProductId_ProductIdAndStatusIn(productId, activeStatuses);
-
-			// 3. 如果存在活躍訂單，則禁止修改交易方式
-			if (hasActiveTransactions) {
-				throw new ProductOperationException("更新失敗：此商品尚有未完成的訂單，無法修改其交易方式。");
-			}
-		}
+ 
 		
 		Category category = null;
 		if(updateDto.getCategoryId() != null) {
@@ -233,11 +217,6 @@ public class ProductServiceImpl implements ProductService {
 			throw new AccessDeniedException("您無權刪除此產品");
 		}
 		
-        // 業務邏輯檢查：如果商品已存在任何交易中，則不允許刪除
-        if (transactionRepository.existsByProductId_ProductId(productId)) {
-            throw new ProductOperationException("刪除失敗：此商品已有訂單紀錄，無法刪除。您可以考慮將其下架。");
-        }
-
 		try {
 			productRepository.delete(product);
 		} catch (Exception e) {

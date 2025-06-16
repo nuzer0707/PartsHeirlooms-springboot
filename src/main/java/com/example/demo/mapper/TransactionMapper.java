@@ -23,23 +23,30 @@ public class TransactionMapper {
 
 		TransactionDto dto = modelMapper.map(transaction, TransactionDto.class);
 
-		Product product = transaction.getProductId();
-		if (product != null) {
-			dto.setProductId(product.getProductId());
-			if (product.getProductContent() != null) {
-				dto.setProductTitle(product.getProductContent().getTitle());
-			}
-			if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {
-				dto.setProductFirstImageBases64(product.getProductImages().get(0).getImageBase64());
-			}
-		}
-
+		// 映射買賣雙方資訊
 		User buyer = transaction.getBuyerUser();
 		if (buyer != null) {
 			dto.setBuyerUserId(buyer.getUserId());
 			dto.setBuyerUsername(buyer.getUsername());
 		}
-
+		
+		User  seller = transaction.getSellerUser();
+		if(seller != null) {
+			dto.setSellerUserId(seller.getUserId());
+			dto.setSellerUsername(seller.getUsername());
+		}
+		
+		Product product = transaction.getProductId();
+		  // 映射關聯的商品ID和預覽圖
+		if (product != null) {
+			dto.setProductId(product.getProductId());
+			 // 預覽圖資訊仍然需要從原始商品獲取，因為快照裡沒存
+			if(product.getProductImages() != null&& !product.getProductImages().isEmpty()) {
+				dto.setProductFirstImageBases64(product.getProductImages().get(0).getImageBase64());
+			}
+			
+		}
+		  // 映射完整的快照資訊
 		if (transaction.getShipmentDetail() != null) {
 			dto.setShipmentDetail(modelMapper.map(transaction.getShipmentDetail(), TransactionShipmentDetailDto.class));
 		}

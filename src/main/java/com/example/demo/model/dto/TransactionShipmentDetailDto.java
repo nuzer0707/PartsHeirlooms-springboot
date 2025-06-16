@@ -7,11 +7,15 @@ import lombok.Data;
 
 @Data
 public class TransactionShipmentDetailDto {
-	 	private String methodName;
-	    private String address;
-	    private LocalDateTime meetupTime;
-	    private String notes;
-	    private BigDecimal meetupLatitude;
-	    private BigDecimal meetupLongitude;
+	
+	private String productTitle;
+	private Integer quantity;
+	private BigDecimal pricePerItem;
+	private String methodName;
+	private String address;
+	private LocalDateTime meetupTime;
+	private String notes;
+	private BigDecimal meetupLatitude;
+	private BigDecimal meetupLongitude;
 
 }

@@ -50,51 +50,14 @@ public class TransactionServiceImpl implements TransactionService {
 	private UserRepository userRepository;
 
 	@Autowired
-	private ProductTransactionDetailRepository productTransactionDetailRepository;
-
-	@Autowired
 	private CartItemRepository cartItemRepository;
 
 	@Autowired
 	private TransactionMapper transactionMapper;
 
-	@Autowired
-	private TransactionMethodRepository transactionMethodRepository;
 
-	@Override
-	@Transactional
-	public TransactionDto addTransaction(Integer buyerId, Integer productId, Integer chosenTransactionDetailId)
-			throws UserNotFoundException {
-		User buyer = userRepository.findById(buyerId)
-				.orElseThrow(() -> new UserNotFoundException("找不到買家 ID: " + buyerId));
-		Product product = productRepository.findById(productId)
-				.orElseThrow(() -> new ProductNotFoundException("找不到產品 ID: " + productId));
-		ProductTransactionDetail productTransactionDetail = productTransactionDetailRepository
-				.findById(chosenTransactionDetailId)
-				.orElseThrow(() -> new ProductOperationException("無效的交易方式明細 ID: " + chosenTransactionDetailId));
 
-		if (product.getStatus() != ProductStatus.For_Sale) {
-			throw new ProductOperationException("產品 " + product.getProductContent().getTitle() + " 目前非待售狀態");
-		}
-
-		if (product.getQuantity() <= 0) {
-			throw new ProductOperationException("產品 " + product.getProductContent().getTitle() + " 已售罄");
-		}
-
-		if (product.getSellerUser().getUserId().equals(buyerId)) {
-			throw new ProductOperationException("您不能購買自己的產品");
-		}
-
-		Transaction transaction = Transaction.builder().productId(product).buyerUser(buyer)
-				.sellerUser(product.getSellerUser()).chosenTransactionDetail(productTransactionDetail)
-				.finalPrice(product.getPrice()).build();
-
-		productRepository.save(product);
-
-		Transaction savaedTransaction = transactionRepository.save(transaction);
-
-		return transactionMapper.toDto(savaedTransaction);
-	}
+	
 
 	@Override
 	@Transactional(readOnly = true)
@@ -190,7 +153,8 @@ public class TransactionServiceImpl implements TransactionService {
 		transaction.setStatus(TransactionStatus.Cancelled);
 		// 恢復產品庫存
 		Product product = transaction.getProductId();
-		product.setQuantity(product.getQuantity() + 1); // 假設一次交易一個單位
+		Integer quantityToRestore = transaction.getShipmentDetail() != null ? transaction.getShipmentDetail().getQuantity() : 1;
+		product.setQuantity(product.getQuantity() + quantityToRestore);
     // 如果商品之前因為這筆訂單而被標記為 Sold，現在應該將其恢復為 For_Sale
     // 這樣商品才能被重新上架銷售
     if (product.getStatus() == ProductStatus.Sold) {
@@ -264,11 +228,10 @@ public class TransactionServiceImpl implements TransactionService {
             newTransaction.setSellerUser(product.getSellerUser());
             newTransaction.setProductId(product);
             newTransaction.setFinalPrice(product.getPrice().multiply(BigDecimal.valueOf(quantityToBuy)));
-            newTransaction.setChosenTransactionDetail(chosenDetail);
             newTransaction.setStatus(TransactionStatus.Paid); // 假設結帳後即為「已付款」狀態
 
             // 6. 建立 TransactionShipmentDetail (交易運送資訊快照)
-            TransactionShipmentDetail shipmentDetail = createShipmentDetail(chosenDetail, checkoutRequest.getShippingInfo());
+            TransactionShipmentDetail shipmentDetail = createShipmentDetail(product, chosenDetail, quantityToBuy, checkoutRequest.getShippingInfo());
             newTransaction.setShipmentDetail(shipmentDetail);
             shipmentDetail.setTransaction(newTransaction); // 建立雙向關聯
 
@@ -294,9 +257,18 @@ public class TransactionServiceImpl implements TransactionService {
      * @param shippingInfo 買家填寫的運送資訊 (可能為 null)
      * @return 一個新的 TransactionShipmentDetail 物件
      */
-    private TransactionShipmentDetail createShipmentDetail(ProductTransactionDetail chosenDetail, ShippingInfoDto shippingInfo) {
+    private TransactionShipmentDetail createShipmentDetail(Product product,ProductTransactionDetail chosenDetail,int quantity, ShippingInfoDto shippingInfo) {
         TransactionShipmentDetail shipmentDetail = new TransactionShipmentDetail();
         TransactionMethod chosenMethod = chosenDetail.getTransactionMethod();
+        
+        if(product.getProductContent() != null&& product.getProductContent().getTitle()!=null) {
+        	shipmentDetail.setProductTitle(product.getProductContent().getTitle());
+        }else {
+        	shipmentDetail.setProductTitle("商品標題未提供");
+        }
+        shipmentDetail.setQuantity(quantity);
+        shipmentDetail.setPricePerItem(product.getPrice());
+        
         
         shipmentDetail.setMethodName(chosenMethod.getName());
         shipmentDetail.setNotes(chosenDetail.getGeneralNotes()); 

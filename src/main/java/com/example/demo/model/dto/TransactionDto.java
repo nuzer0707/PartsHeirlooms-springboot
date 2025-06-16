@@ -15,7 +15,6 @@ public class TransactionDto {
 	
 	// 產品資訊
 	private Integer productId;
-	private String productTitle;
 	private String productFirstImageBases64;
 	
 	// 賣家和買家資訊
@@ -30,6 +29,6 @@ public class TransactionDto {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	
-	//運送資訊
+	// 完整的交易快照細節
 	private TransactionShipmentDetailDto shipmentDetail;
 }
