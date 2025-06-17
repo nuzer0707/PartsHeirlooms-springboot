@@ -27,8 +27,15 @@ public interface MessageRepository extends JpaRepository<Message,Integer> {
      * @param transactionId 交易ID
      * @return 消息列表
      */
-    List<Message> findByTransaction_TransactionIdOrderByCreatedAtAsc(Integer transactionId);
+    
 
+    @Query("SELECT m FROM Message m " +
+        "JOIN FETCH m.senderUser " +        // 預先抓取發送者
+        "JOIN FETCH m.receiverUser " +      // 預先抓取接收者
+        "JOIN FETCH m.transaction t " +     // 預先抓取交易
+        "WHERE t.transactionId = :transactionId " +
+        "ORDER BY m.createdAt ASC")
+    List<Message> findByTransaction_TransactionIdOrderByCreatedAtAsc(@Param("transactionId") Integer transactionId);
     /**
      * 查找用戶發送或接收的所有消息（用於構建對話列表的基礎數據），
      * 可以進一步按對話對象分組和排序。

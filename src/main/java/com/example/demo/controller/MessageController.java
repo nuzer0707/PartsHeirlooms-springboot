@@ -36,36 +36,37 @@ public class MessageController {
 	private MessageService messageService;
 	
 	
-	@PostMapping
-	public ResponseEntity<ApiResponse<MessageDto>> sendMessage(
-			@Valid @RequestBody MessageSendDto messageSendDto,HttpSession session){
-		
-		 UserCert userCert = (UserCert) session.getAttribute("userCert");
-		 
-		 if(userCert==null) return unauthorizedGenericResponse("請先登入以發送消息");
-		 
-		 
-		 try {
-			 MessageDto sentMessage =messageService.sendMessage(userCert.getUserId(), messageSendDto);
-			 
-			 return ResponseEntity.status(HttpStatus.CREATED)
-					 .body(ApiResponse.success("消息發送成功", sentMessage));
-			 
-			
-		} catch (UserNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "發送失敗："+e.getMessage()));
-		}catch (ProductNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "發送失敗："+e.getMessage()));
-		}catch(AccessDeniedException e) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN)
-					.body(ApiResponse.error(HttpStatus.FORBIDDEN.value(), "發送失敗："+e.getMessage()));
-		}catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), "發送失敗："+e.getMessage()));
-		}
-	}
+	/*
+	 * @PostMapping public ResponseEntity<ApiResponse<MessageDto>> sendMessage(
+	 * 
+	 * @Valid @RequestBody MessageSendDto messageSendDto,HttpSession session){
+	 * 
+	 * UserCert userCert = (UserCert) session.getAttribute("userCert");
+	 * 
+	 * if(userCert==null) return unauthorizedGenericResponse("請先登入以發送消息");
+	 * 
+	 * 
+	 * try { MessageDto sentMessage
+	 * =messageService.sendMessage(userCert.getUserId(), messageSendDto);
+	 * 
+	 * return ResponseEntity.status(HttpStatus.CREATED)
+	 * .body(ApiResponse.success("消息發送成功", sentMessage));
+	 * 
+	 * 
+	 * } catch (UserNotFoundException e) { return
+	 * ResponseEntity.status(HttpStatus.NOT_FOUND)
+	 * .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(),
+	 * "發送失敗："+e.getMessage())); }catch (ProductNotFoundException e) { return
+	 * ResponseEntity.status(HttpStatus.NOT_FOUND)
+	 * .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(),
+	 * "發送失敗："+e.getMessage())); }catch(AccessDeniedException e) { return
+	 * ResponseEntity.status(HttpStatus.FORBIDDEN)
+	 * .body(ApiResponse.error(HttpStatus.FORBIDDEN.value(),
+	 * "發送失敗："+e.getMessage())); }catch (IllegalArgumentException e) { return
+	 * ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	 * .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(),
+	 * "發送失敗："+e.getMessage())); } }
+	 */
 	
 
 	@GetMapping("/conversation/{otherUserId}")
