@@ -29,9 +29,9 @@ import com.example.demo.model.dto.IssueReportDto;
 import com.example.demo.model.dto.IssueReportSubmitDto;
 import com.example.demo.model.dto.RatingDto;
 import com.example.demo.model.dto.RatingSubmitDto;
-import com.example.demo.model.dto.SellerVerificationApplyDto;
-import com.example.demo.model.dto.SellerVerificationDto;
 import com.example.demo.model.dto.TransactionDto;
+import com.example.demo.model.dto.SellerVerification.SellerVerificationApplyDto;
+import com.example.demo.model.dto.SellerVerification.SellerVerificationDto;
 import com.example.demo.model.dto.products.ProductSummaryDto;
 import com.example.demo.model.dto.users.UserCert;
 

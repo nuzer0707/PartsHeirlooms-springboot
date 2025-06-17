@@ -2,7 +2,10 @@ package com.example.demo.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -43,9 +46,24 @@ public interface MessageRepository extends JpaRepository<Message,Integer> {
      * @param userId 用戶ID
      * @return 消息列表
      */
-    @Query("SELECT m FROM Message m WHERE m.senderUser.userId = :userId OR m.receiverUser.userId = :userId ORDER BY m.createdAt DESC")
-    List<Message> findAllMessagesForUser(@Param("userId") Integer userId);
+    @Query("SELECT m FROM Message m " +
+            "JOIN FETCH m.senderUser " +
+            "JOIN FETCH m.receiverUser " +
+            "WHERE m.senderUser.userId = :userId OR m.receiverUser.userId = :userId " +
+            "ORDER BY m.createdAt DESC")
+     List<Message> findAllMessagesForUser(@Param("userId") Integer userId);
+    
+    @Query(value = "SELECT m FROM Message m " +
+            "JOIN FETCH m.senderUser " +
+            "JOIN FETCH m.receiverUser " +
+            "WHERE m.senderUser.userId = :userId OR m.receiverUser.userId = :userId " +
+            "ORDER BY m.createdAt DESC",
+    countQuery = "SELECT count(m) FROM Message m WHERE m.senderUser.userId = :userId OR m.receiverUser.userId = :userId")
+    Page<Message> findAllMessagesForUser(@Param("userId") Integer userId, Pageable pageable);
 
+    @Modifying // 表示這是一個更新操作
+    @Query("UPDATE Message m SET m.isRead = true WHERE m.senderUser.userId = :senderId AND m.receiverUser.userId = :receiverId AND m.isRead = false")
+    int markAsRead(@Param("senderId") Integer senderId, @Param("receiverId") Integer receiverId);
 	
 	
 	

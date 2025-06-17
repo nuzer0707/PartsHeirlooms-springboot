@@ -1,9 +1,17 @@
 package com.example.demo.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,8 +19,11 @@ import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.exception.AccessDeniedException;
 import com.example.demo.mapper.MessageMapper;
-import com.example.demo.model.dto.MessageDto;
-import com.example.demo.model.dto.MessageSendDto;
+import com.example.demo.model.dto.message.ConversationDto;
+import com.example.demo.model.dto.message.ConversationUserDto;
+import com.example.demo.model.dto.message.LastMessageDto;
+import com.example.demo.model.dto.message.MessageDto;
+import com.example.demo.model.dto.message.MessageSendDto;
 import com.example.demo.model.entity.Message;
 import com.example.demo.model.entity.Transaction;
 import com.example.demo.model.entity.User;
@@ -29,7 +40,7 @@ public class MessageServiceImpl implements MessageService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private TransactionRepository transactionRepository;
 
@@ -112,6 +123,75 @@ public class MessageServiceImpl implements MessageService {
 
 		return messageRepository.findByTransaction_TransactionIdOrderByCreatedAtAsc(transactionId).stream()
 				.map(messageMapper::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<ConversationDto> getConversationsForUser(Integer userId,Pageable pageable) throws UserNotFoundException {
+		
+		if (!userRepository.existsById(userId)) {
+			throw new UserNotFoundException("找不到用戶 ID: " + userId);
+		}
+
+		List<Message> allMessages = messageRepository.findAllMessagesForUser(userId);
+		
+		Map<Integer, ConversationDto> conversationMap = new LinkedHashMap<>();
+
+		// 遍歷所有訊息來計算未讀數
+
+		for (Message message : allMessages) {
+			
+			User otherPartyUser = message.getSenderUser().getUserId().equals(userId) 
+					? message.getReceiverUser()
+					: message.getSenderUser();
+
+			Integer otherPartyId = otherPartyUser.getUserId();
+
+			// 使用 computeIfAbsent 來初始化 ConversationDto
+			ConversationDto conversation = conversationMap.computeIfAbsent(otherPartyId, id -> {
+				ConversationDto convDto = new ConversationDto();
+
+				ConversationUserDto otherPartyDto = new ConversationUserDto();
+
+				otherPartyDto.setUserId(otherPartyUser.getUserId());
+				otherPartyDto.setUsername(otherPartyUser.getUsername());
+				convDto.setOtherParty(otherPartyDto);
+
+				// 因為是第一次遇到（按時間倒序），所以這就是最後一條訊息
+				LastMessageDto lastMessageDto = new LastMessageDto();
+				lastMessageDto.setContent(message.getContent());
+				lastMessageDto.setCreatedAt(message.getCreatedAt());
+				// 這裡的 isRead 反映的是【最後一條訊息】的讀取狀態
+				// 如果是對方發來的，就用實際的 isRead 值；如果是自己發的，就永遠是 true (已讀)
+				lastMessageDto.setRead(message.getReceiverUser().getUserId().equals(userId) ? message.isRead() : true);
+				convDto.setLastMessage(lastMessageDto);
+
+				convDto.setUnreadCount(0);
+				return convDto;
+
+			});
+			// 計算未讀訊息的邏輯
+			// 條件：這條訊息是對方發給我的，並且我還沒有讀
+			if (message.getReceiverUser().getUserId().equals(userId) && !message.isRead()) {
+				conversation.setUnreadCount(conversation.getUnreadCount()+1);
+			}
+
+		}
+		List<ConversationDto>allConversations = new ArrayList<>(conversationMap.values());
+		
+		int start = (int) pageable.getOffset();
+		int end = Math.min((start+pageable.getPageSize()), allConversations.size());
+		
+		List<ConversationDto> pageContent = (start<=end)?allConversations.subList(start, end):Collections.emptyList(); 
+		
+		return new PageImpl<>(pageContent,pageable,allConversations.size());
+	}
+
+	@Override
+	@Transactional
+	public void markConversationAsRead(Integer otherPartyId, Integer currentUserId) {
+		messageRepository.markAsRead(otherPartyId, currentUserId);
+		
 	}
 
 }

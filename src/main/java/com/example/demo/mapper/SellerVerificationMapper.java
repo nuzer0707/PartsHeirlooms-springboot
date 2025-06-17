@@ -6,8 +6,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.model.dto.SellerVerificationApplyDto;
-import com.example.demo.model.dto.SellerVerificationDto;
+import com.example.demo.model.dto.SellerVerification.SellerVerificationApplyDto;
+import com.example.demo.model.dto.SellerVerification.SellerVerificationDto;
 import com.example.demo.model.entity.SellerVerification;
 import com.example.demo.model.entity.User;
 import com.example.demo.model.entity.VerificationImage;

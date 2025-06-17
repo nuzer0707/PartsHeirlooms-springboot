@@ -4,7 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.model.dto.MessageDto;
+import com.example.demo.model.dto.message.MessageDto;
 import com.example.demo.model.entity.Message;
 
 @Component

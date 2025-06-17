@@ -3,10 +3,14 @@ package com.example.demo.service;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.model.dto.MessageDto;
-import com.example.demo.model.dto.MessageSendDto;
+import com.example.demo.model.dto.message.ConversationDto;
+import com.example.demo.model.dto.message.MessageDto;
+import com.example.demo.model.dto.message.MessageSendDto;
 
 public interface MessageService {
 
@@ -48,7 +52,7 @@ public interface MessageService {
 	List<MessageDto> getMessagesForTransaction(Integer transactionId,Integer requestingUserId) throws UserNotFoundException;
 	
 	
+	Page<ConversationDto> getConversationsForUser(Integer userId, Pageable pageable) throws UserNotFoundException;
 	
-	
-	
+	void markConversationAsRead(Integer otherPartyId, Integer currentUserId);
 }

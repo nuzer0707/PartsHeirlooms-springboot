@@ -1,4 +1,4 @@
-package com.example.demo.model.dto;
+package com.example.demo.model.dto.SellerVerification;
 
 import java.util.List;
 

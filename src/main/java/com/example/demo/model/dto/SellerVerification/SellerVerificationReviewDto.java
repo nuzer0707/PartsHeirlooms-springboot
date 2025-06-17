@@ -1,4 +1,4 @@
-package com.example.demo.model.dto;
+package com.example.demo.model.dto.SellerVerification;
 
 import com.example.demo.model.entity.enums.VerificationStatus;
 

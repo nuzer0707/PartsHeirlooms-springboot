@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -13,17 +14,18 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker// 啟用 WebSocket 訊息代理
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+	
+	@Autowired
+    private HttpHandshakeInterceptor handshakeInterceptor; 
+	
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		
-	// 註冊一個 STOMP 端點，用戶端將使用它來連接到 WebSocket 伺服器。
-    // "/ws" 是連接的端點 URL。
-    // withSockJS() 是為不支援 WebSocket 的瀏覽器提供備用選項。
+		registry.addEndpoint("/ws-connect") // <--- 使用一個專用且清晰的路徑
+        .setAllowedOriginPatterns("*")
+        .addInterceptors(handshakeInterceptor); // <--- 在此處加上攔截器
+			
 		
-		registry.addEndpoint("/ws")
-			.setAllowedOriginPatterns("http://localhost:5173", "http://localhost:8002")
-			//.setAllowedOriginPatterns("*")
-			.withSockJS();
 	}
 
 	@Override

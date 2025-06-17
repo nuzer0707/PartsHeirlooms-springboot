@@ -3,9 +3,9 @@ package com.example.demo.service;
 import java.util.List;
 
 import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.model.dto.SellerVerificationApplyDto;
-import com.example.demo.model.dto.SellerVerificationDto;
-import com.example.demo.model.dto.SellerVerificationReviewDto;
+import com.example.demo.model.dto.SellerVerification.SellerVerificationApplyDto;
+import com.example.demo.model.dto.SellerVerification.SellerVerificationDto;
+import com.example.demo.model.dto.SellerVerification.SellerVerificationReviewDto;
 
 public interface SellerVerificationService {
 	
