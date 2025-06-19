@@ -40,10 +40,22 @@ public class IssueReportServiceImpl implements IssueReportService{
 		User reporter = userRepository.findById(reporterUserId)
 				.orElseThrow(()->new UserNotFoundException("檢舉者用戶不存在 ID: "+reporterUserId));
 		
-		IssueReport report =issueReportMapper.toEntity(submitDto, reporter);
-		report.setStatus(IssueStatus.Open);
-		IssueReport saveReport = issueReportRepository.save(report);
-		return issueReportMapper.toDto(saveReport);
+		IssueReport report = new IssueReport();
+		
+		report.setTargetType(submitDto.getTargetType());
+	  report.setTargetId(submitDto.getTargetTypeId()); // 假設 DTO 中的 getter 是 getTargetTypeId()
+	  report.setReasonCategory(submitDto.getReasonCategory());
+	  report.setDetails(submitDto.getDetails());
+	  
+	  report.setStatus(IssueStatus.Open);
+    
+    // 5. 設置關聯的持久化物件
+    report.setReporterUser(reporter);
+    
+    // 6. 保存這個全新的、乾淨的實體
+    
+    IssueReport savedReport = issueReportRepository.save(report);
+    return issueReportMapper.toDto(savedReport);
 	}
 
 	@Override

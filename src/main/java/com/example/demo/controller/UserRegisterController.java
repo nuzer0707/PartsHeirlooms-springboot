@@ -1,8 +1,16 @@
 package com.example.demo.controller;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +36,9 @@ import jakarta.validation.constraints.NotBlank;
 @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8002"}, allowCredentials = "true")
 public class UserRegisterController {
 	
+	@Value("${app.frontend-url}")
+  private String frontendUrl;
+	
 	@Autowired
 	private UserRegisterService userRegisterService;
 	
@@ -51,27 +62,41 @@ public class UserRegisterController {
 	
 	
 	@GetMapping("/verify-email")
-	public ResponseEntity<ApiResponse<Void>> verifyUserEmail(@RequestParam("token") String token){
-		
+	public ResponseEntity<ApiResponse<Void>> verifyUserEmail(@RequestParam("token") String token ){
+		 
+		HttpHeaders headers = new HttpHeaders(); 
 		try {
+			
 			userRegisterService.EmailToken(token);
-			return ResponseEntity.ok(ApiResponse.success("電子郵件驗證成功！您的帳戶已激活，現在可以登入了。", null));
+			
+			headers.setLocation(URI.create(frontendUrl + "/auth/verify-result?status=success"));
+			 
+			return new ResponseEntity<>(headers, HttpStatus.FOUND);
 					 
 		} catch (TokenInvalidException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-													 .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+			String errorMessage = URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
+			headers.setLocation(URI.create(frontendUrl + "/auth/verify-result?status=error&message=" + errorMessage));
+			return new ResponseEntity<>(headers, HttpStatus.FOUND);
 		}	catch (RuntimeException e) {
-			System.err.println("驗證郵件過程中發生錯誤: " + e.getMessage());
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					 .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),"驗證失敗，伺服器內部錯誤"));
+			String errorMessage = URLEncoder.encode("伺服器內部錯誤，請稍後再試", StandardCharsets.UTF_8);
+			headers.setLocation(URI.create(frontendUrl + "/auth/verify-result?status=error&message=" + errorMessage));
+			return new ResponseEntity<>(headers, HttpStatus.FOUND);
 		}
 		
 	}
 	
 	//重新發送驗證郵件的端點
 	@PostMapping("/resend-verification-email")
-	public ResponseEntity<ApiResponse<Void>> resendVerifyEmail(@RequestParam @NotBlank(message = "Email 地址不能為空") @Email(message = "Email 格式不正確")String email){
+	public ResponseEntity<ApiResponse<Void>> resendVerifyEmail(@RequestBody Map<String, String> payload){
+		
+		String email = payload.get("email");
+		// 簡單的驗證
+		if(email == null || email.trim().isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Email 地址不能為空"));
+		}
+		
+		
 		try {
 			userRegisterService.resendEmail(email);
 			return ResponseEntity.ok(ApiResponse.success("新的驗證郵件已成功發送至 "+email+" 請檢查您的收件匣", null));

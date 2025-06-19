@@ -31,9 +31,15 @@ public class UserRegisterServiceImpl implements UserRegisterService {
 
 	@Value("${app.base-url}")
 	private String appBaseUrl;
+	
+	@Value("${app.frontend-url}")
+	private String frontendUrl;
 
 	private static final int RESEND_COOLDOWN_SECONDS = 60; // 定義冷卻時間為常數
 
+
+	
+	
 	@Override
 	@Transactional
 	public void registerNewUser(UserRegisterDto userRegisterDto) throws UserAlreadyExistsException {
@@ -84,7 +90,7 @@ public class UserRegisterServiceImpl implements UserRegisterService {
 				.orElseThrow(() -> new TokenInvalidException("無效的驗證 Token 或 Token 已被使用"));
 
 		if (user.getActive()) {
-			throw new TokenInvalidException("此帳戶已經被驗證過了");
+			throw new TokenInvalidException("此帳戶已經被驗證過了，無需重複操作。");
 		}
 
 		user.setActive(true);
