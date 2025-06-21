@@ -46,7 +46,7 @@ public class IssueReport {
 	private String details;
 	
   @Enumerated(EnumType.STRING)
-  @Column(name = "status", nullable = false, columnDefinition="ENUM('Open','In Progress','Resolved','Closed','Invalid') DEFAULT 'Open'")
+  @Column(name = "status", nullable = false, columnDefinition="ENUM('Open','In_Progress','Resolved','Closed','Invalid') DEFAULT 'Open'")
   private IssueStatus status;
 	
   @CreationTimestamp

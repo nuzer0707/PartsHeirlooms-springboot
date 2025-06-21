@@ -1,6 +1,6 @@
 package com.example.demo.model.entity.enums;
 
 public enum IssueStatus {
-	Open, In_Progress, Resolved, Closed, Invalid
+	Open, In_Progress, Resolved, Closed, Invalid ,
 }
 

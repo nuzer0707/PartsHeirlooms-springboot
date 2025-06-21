@@ -13,4 +13,6 @@ public interface IssueReportRepository extends JpaRepository<IssueReport, Intege
 	
 	List<IssueReport> findByReporterUser_UserIdOrderByCreatedAtDesc( Integer userId);
 	List<IssueReport> findByStatus(IssueStatus status);
+	
+	
 }
