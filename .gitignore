@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Custom Rules ###
+# 忽略 Spring Boot 的敏感設定檔
+src/main/resources/application.properties
