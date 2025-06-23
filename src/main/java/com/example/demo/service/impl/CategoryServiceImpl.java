@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.exception.CategoryAlreadyException;
 import com.example.demo.exception.CategoryNotFoundException;
 import com.example.demo.mapper.CategoryMapper;
+import com.example.demo.model.dto.CategoryAddDto;
 import com.example.demo.model.dto.CategoryDto;
+import com.example.demo.model.dto.CategoryUpdateDto;
 import com.example.demo.model.entity.Category;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.service.CategoryService;
@@ -104,6 +106,45 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new CategoryAlreadyException("刪除失敗: 分類號 " + categoryId +"不存在");
 		}
 		categoryRepository.deleteById(categoryId);
+	}
+
+	@Override
+	@Transactional
+	public CategoryDto addCategory(CategoryAddDto categoryAddDto) {
+		 categoryRepository.findByCategoryName(categoryAddDto.getCategoryName()).ifPresent(c -> {
+	            throw new CategoryAlreadyException("新增失敗: 分類名稱 " + categoryAddDto.getCategoryName() + " 已存在");
+	        });
+
+	        // 創建新的 Category 實體，【注意】這裡我們不再設置 ID
+	        Category category = new Category();
+	        category.setCategoryName(categoryAddDto.getCategoryName());
+
+	        // 保存實體，數據庫會自動生成 ID
+	        Category savedCategory = categoryRepository.save(category);
+
+	        // 將保存後的實體（現在有 ID 了）轉換為 DTO 並返回
+	        return categoryMapper.toDto(savedCategory);
+	}
+
+	@Override
+	@Transactional
+	public CategoryDto updateCategory(Integer categoryId, CategoryUpdateDto categoryUpdateDto) {
+	      Category category = categoryRepository.findById(categoryId)
+	              .orElseThrow(() -> new CategoryNotFoundException("修改失敗: 找不到分類 ID " + categoryId));
+
+	          // 檢查新名稱是否與其他現有分類衝突
+	          categoryRepository.findByCategoryName(categoryUpdateDto.getCategoryName())
+	              .ifPresent(existingCategory -> {
+	                  if (!existingCategory.getCategoryId().equals(categoryId)) {
+	                      throw new CategoryAlreadyException("修改失敗: 分類名稱 " + categoryUpdateDto.getCategoryName() + " 已被其他分類使用");
+	                  }
+	              });
+
+	          // 更新名稱並保存
+	          category.setCategoryName(categoryUpdateDto.getCategoryName());
+	          Category updatedCategory = categoryRepository.save(category);
+
+	          return categoryMapper.toDto(updatedCategory);
 	}
 
 

@@ -19,5 +19,5 @@ public class IssueReportDto {
 	private String reasonCategory;
 	private IssueStatus status;
 	private LocalDateTime createdAt;
-	
+	private String details;
 }

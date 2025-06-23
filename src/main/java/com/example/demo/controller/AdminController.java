@@ -25,7 +25,9 @@ import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.exception.ProductOperationException;
 import com.example.demo.exception.UserAlreadyExistsException;
 import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.model.dto.CategoryAddDto;
 import com.example.demo.model.dto.CategoryDto;
+import com.example.demo.model.dto.CategoryUpdateDto;
 import com.example.demo.model.dto.IssueReportDto;
 import com.example.demo.model.dto.PlatformOverviewDto;
 import com.example.demo.model.dto.RatingDto;
@@ -406,26 +408,28 @@ public class AdminController {
   // ==========================================================
 	
 	//新增分類
-	@PostMapping("/categories")
-	public ResponseEntity<ApiResponse<CategoryDto>> addCategory(@Valid @RequestBody CategoryDto categoryDto ,BindingResult bindingResult ){
-		if(bindingResult.hasErrors()) {
-			throw new CategoryException("新增失敗:" + bindingResult.getAllErrors().get(0).getDefaultMessage());
-		}
-		categoryService.addCategory(categoryDto);
-		return ResponseEntity.ok(ApiResponse.success("Category 新增成功 ", categoryDto));
-		
-	} 
+	 @PostMapping("/categories")
+	    public ResponseEntity<ApiResponse<CategoryDto>> addCategory(@Valid @RequestBody CategoryAddDto categoryAddDto, BindingResult bindingResult) {
+	        if (bindingResult.hasErrors()) {
+	            // 處理驗證錯誤
+	            String errorMessage = "新增失敗: " + bindingResult.getAllErrors().get(0).getDefaultMessage();
+	            return ResponseEntity.badRequest().body(ApiResponse.error(400, errorMessage));
+	        }
+	        CategoryDto createdCategory = categoryService.addCategory(categoryAddDto);
+	        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Category 新增成功", createdCategory));
+	    }
 	
-	// 修改分類
-	@PutMapping("/categories/{categoryId}")
-	public ResponseEntity<ApiResponse<CategoryDto>> updateCategory(@PathVariable Integer categoryId,@Valid @RequestBody CategoryDto categoryDto ,BindingResult bindingResult){
-		if(bindingResult.hasErrors()) {
-			throw new CategoryException("修改失敗:" + bindingResult.getAllErrors().get(0).getDefaultMessage());
-		}
-		categoryService.updateCategory(categoryId, categoryDto);
-		
-		return ResponseEntity.ok(ApiResponse.success("Category 修改成功 ", categoryDto));
-	}
+	  // 修改分類
+	    @PutMapping("/categories/{categoryId}")
+	    public ResponseEntity<ApiResponse<CategoryDto>> updateCategory(@PathVariable Integer categoryId, @Valid @RequestBody CategoryUpdateDto categoryUpdateDto, BindingResult bindingResult) {
+	        if (bindingResult.hasErrors()) {
+	            // 處理驗證錯誤
+	             String errorMessage = "修改失敗: " + bindingResult.getAllErrors().get(0).getDefaultMessage();
+	            return ResponseEntity.badRequest().body(ApiResponse.error(400, errorMessage));
+	        }
+	        CategoryDto updatedCategory = categoryService.updateCategory(categoryId, categoryUpdateDto);
+	        return ResponseEntity.ok(ApiResponse.success("Category 修改成功", updatedCategory));
+	    }
 	
 	// 刪除分類
 	@DeleteMapping("/categories/{categoryId}")
