@@ -1,15 +1,15 @@
 package com.example.demo.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.example.demo.model.entity.Transaction;
+import com.example.demo.model.entity.enums.TransactionStatus;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.model.entity.Transaction;
-import com.example.demo.model.entity.enums.TransactionStatus;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
@@ -33,6 +33,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
      */
 
 	@Query("SELECT t FROM Transaction t WHERE t.buyerUser.userId = :buyerId AND t.status IN :statuses ORDER BY t.createdAt DESC")
+	@EntityGraph(attributePaths = {"shipmentDetails", "productId","buyerUser", "sellerUser"})
 	List<Transaction> findByBuyerUserUserIdAndStatusInOrderByCreatedAtDesc(@Param("buyerId") Integer buyerId, @Param("statuses") List<TransactionStatus> statuses);
 	
 	/**
@@ -43,6 +44,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
      */
 
 	@Query("SELECT t FROM Transaction t WHERE t.sellerUser.userId = :sellerId AND t.status IN :statuses ORDER BY t.createdAt DESC")
+	@EntityGraph(attributePaths = {"shipmentDetails", "productId","buyerUser", "sellerUser"})
 	List<Transaction> findBySellerUserUserIdAndStatusInOrderByCreatedAtDesc(@Param("sellerId") Integer sellerId, @Param("statuses") List<TransactionStatus> statuses);
 
 	
